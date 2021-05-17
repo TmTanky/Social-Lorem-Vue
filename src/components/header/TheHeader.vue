@@ -4,12 +4,27 @@
             <h1> Social-Vue </h1>
         </div>
 
-        <!-- <div class="navlinks">
-            <router-link to="/"> Login </router-link>
-            <router-link to="/register"> Register </router-link>
-        </div> -->
+        <div class="navlinks">
+            <router-link to="/" @click="logout" v-if="isLoggedIn" > Logout </router-link>
+        </div>
     </nav>
 </template>
+
+<script>
+export default {
+    methods: {
+        logout() {
+            this.$store.dispatch('logoutSuccess')
+            this.$store.dispatch('emptyUser')
+        }
+    },
+    computed: {
+        isLoggedIn() {
+            return this.$store.state.isLoggedIn
+        }
+    }
+}
+</script>
 
 <style scoped>
 

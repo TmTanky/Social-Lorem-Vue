@@ -13,12 +13,13 @@
                 <button> Login </button>
                 <router-link to="/register"> Dont have an account? Register now. </router-link>
             </form>
-            <!-- <router-link to="/register"> Dont have an account? Register now. </router-link> -->
         </div>
     </main>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
     data() {
         return {
@@ -27,8 +28,31 @@ export default {
         }
     },
     methods: {
-        loginSubmit() {
-            console.log(this.email, this.password)
+        async loginSubmit() {
+
+            const {data} = await axios.post('http://localhost:8000/graphql',{
+                query: `query loginUser($email: String, $password: String) {
+                    loginUser(email: $email, password: $password) {
+                        _id
+                        firstName
+                        lastName
+                        email
+                    }
+                }`,
+                variables: {
+                    email: this.email,
+                    password: this.password
+                }
+            })
+
+            this.$store.dispatch('loginSuccess')
+            this.$store.dispatch('setUser', data.data.loginUser)
+            this.$router.push('/home')
+        }
+    },
+    computed: {
+        firstName() {
+            return this.$store.state.user.firstName
         }
     }
 }

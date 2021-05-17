@@ -15,6 +15,7 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
     data() {
         return {
@@ -25,8 +26,27 @@ export default {
         }
     },
     methods: {
-        registerSubmit() {
-            console.log(this.firstName, this.lastName, this.email, this.password)
+        async registerSubmit() {
+
+            const {data} = await axios.post('http://localhost:8000/graphql', {
+                query: `mutation createUser($firstName: String!, $lastName: String!, $email: String!, $password: String!) {
+                    createUser(firstName: $firstName, lastName: $lastName, email: $email, password: $password) {
+                        firstName
+                    }
+                }`,
+                variables: {
+                    firstName: this.firstName,
+                    lastName: this.lastName,
+                    email: this.email,
+                    password: this.password
+                }
+            })
+
+            this.$store.dispatch('loginSuccess')
+            this.$store.dispatch('setUser', data.data.createUser)
+            this.$router.push('/home')
+
+            // console.log(this.firstName, this.lastName, this.email, this.password)
         }
     }
 }

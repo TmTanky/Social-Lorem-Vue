@@ -2,6 +2,7 @@
 import Login from '../pages/login/Login.vue'
 import Register from '../pages/register/Register.vue'
 import Home from '../pages/home/Home.vue'
+import Profile from '../pages/profile/Profile.vue'
 
 // Store
 import {store} from '../vue-state/store/store'
@@ -34,6 +35,18 @@ export const routes = [
     {
         path: '/home',
         component: Home,
+        beforeEnter: (to, from, next) => {
+            
+            if (!store.state.isLoggedIn) {
+                return next('/')
+            }
+
+            return next()
+        }
+    },
+    {
+        path: '/profile',
+        component: Profile,
         beforeEnter: (to, from, next) => {
             
             if (!store.state.isLoggedIn) {

@@ -1,13 +1,28 @@
 <template>
     <main>
         <div class="intro">
-            <h1> Welcome to Social-Lorem </h1>
-            <p> This is a existing project built with React JS and transformed it with Vue JS </p>
+            <div class="introdetails">
+                <h1> Welcome to Social-Lorem </h1>
+                <p> This is a existing project built with React JS and transformed it with Vue JS </p>
+            </div>
         </div>
 
         <div class="login">
             <form @submit.prevent="loginSubmit" method="post">
                 <h1> Login </h1>
+                
+                <transition name="error" >
+                    <div class="errorbox" v-if="isError"  >
+                        <div class="errormsg">
+                            <p class="loginerror"> {{ error.message }} </p>
+                        </div>
+
+                        <div @click="closeError" class="close">
+                            <p> Close </p>
+                        </div>
+                    </div>
+                </transition>
+
                 <input type="text" placeholder="Email" name="email" v-model="email">
                 <input type="password" placeholder="Password" name="password" v-model="password">
                 <button> Login </button>
@@ -24,7 +39,9 @@ export default {
     data() {
         return {
             email: "",
-            password: ""
+            password: "",
+            error: {},
+            isError: false
         }
     },
     methods: {
@@ -37,6 +54,15 @@ export default {
                         firstName
                         lastName
                         email
+                        myPosts {
+                            _id
+                            content
+                            postBy {
+                                _id
+                                firstName
+                                lastName
+                            }
+                        }
                     }
                 }`,
                 variables: {
@@ -45,14 +71,30 @@ export default {
                 }
             })
 
+            if (data.errors !== undefined && data.errors.length > 0) {
+                this.isError = true
+                return this.error = data.errors[0]
+            }
+
             this.$store.dispatch('loginSuccess')
             this.$store.dispatch('setUser', data.data.loginUser)
             this.$router.push('/home')
+
+        },
+        closeError() {
+            this.isError = false
         }
     },
     computed: {
         firstName() {
             return this.$store.state.user.firstName
+        }
+    },
+    watch: {
+        isError() {
+            setTimeout(() => {
+                this.isError = false
+            }, 8000)
         }
     }
 }
@@ -75,11 +117,17 @@ main {
 .intro {
     flex-direction: column;
     justify-content: center;
-    margin: 0rem 1rem;
 }
 
-.intro h1 {
-    font-size: 2.5rem;
+.introdetails {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: auto;
+}
+
+.intro .introdetails h1 {
+    font-size: 3rem;
 }
 
 /* 2nd Box */
@@ -96,22 +144,28 @@ main {
 }
 
 .login form h1 {
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
 input {
-    padding: 0.5rem;
-    margin-top: -1.5px;
+    padding: 0.8rem 0.5rem;
+    margin: 0.2rem 0rem;
+    background-color: whitesmoke;
+    border: none;
+    outline-color: rgb(206, 198, 198);
+    color: black;
 }
 
 button {
-    margin-top: 1rem;
+    border: none;
     background-color: black;
     color: white;
     padding: 0.5rem;
-    border-radius: 5px;
-    border: none;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
     transition-duration: 0.5s;
+    font-size: 1rem;
+    text-transform: uppercase;
 }
 
 button:hover {
@@ -121,6 +175,59 @@ button:hover {
 
 a {
     margin-top: 0.5rem;
+}
+
+/* Error Handling */
+
+@keyframes loginError {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.errorbox {
+    border: solid red 1px;
+    border-radius: 3px;
+    margin: 0.5rem 0rem;
+    padding: 0.2rem 0.5rem;
+    display: flex;
+}
+
+.errormsg, .close {
+    flex: 1;
+    display: flex;
+}
+
+.close {
+    justify-content: flex-end;
+    align-items: center;
+    cursor: pointer;
+}
+
+.close p {
+    font-size: 0.8rem;
+}
+
+.errorbox p {
+    color: red;
+}
+
+.loginerror {
+    margin: 0.5rem 0rem;
+    color: red;
+    font-size: 0.8rem;
+}
+
+.error-enter-active {
+    animation: loginError 0.3s ease-in;
+}
+
+.error-leave-active {
+    animation: loginError 0.3s ease-out reverse;
 }
 
 </style>

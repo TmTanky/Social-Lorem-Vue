@@ -1,5 +1,5 @@
 <template>
-    <nav>
+    <nav v-if="!isLoggedIn" >
         <div class="navlogo">
             <h1> Social-Vue </h1>
         </div>
@@ -48,6 +48,7 @@ nav {
 a {
     margin: 0rem 0.5rem;
     text-decoration: none;
+    color: white;
 }
 
 </style>

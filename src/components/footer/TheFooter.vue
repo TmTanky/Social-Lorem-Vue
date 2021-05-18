@@ -1,5 +1,5 @@
 <template>
-    <footer> Copyright &copy; Social-Lorem {{ year }} </footer>
+    <footer v-if="!isLoggedIn" > Copyright &copy; Social-Lorem {{ year }} </footer>
 </template>
 
 <script>
@@ -7,6 +7,11 @@ export default {
     data() {
         return {
             year: new Date().getFullYear()
+        }
+    },
+    computed: {
+        isLoggedIn() {
+            return this.$store.state.isLoggedIn
         }
     }
 }

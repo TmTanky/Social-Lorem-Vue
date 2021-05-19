@@ -27,12 +27,12 @@ export default {
 <style scoped>
 
 .sidebar {
+    flex: 1;
     min-height: 100vh;
-    width: 15rem;
     display: flex;
     flex-direction: column;
     padding-top: 4rem;
-    border-right: solid 1px gainsboro;
+    border-right: solid 5px white;
     background-color: black;
 }
 

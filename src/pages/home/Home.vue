@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import Sidebar from '../../components/home/sidebar/Sidebar.vue'
+import Sidebar from '../../components/sidebar/Sidebar.vue'
 import Feed from '../../components/home/feed/Feed.vue'
 
 export default {
@@ -20,9 +20,9 @@ export default {
 <style scoped>
 
 main.homebox {
-    position: absolute;
     display: flex;
     min-height: 100vh;
+    width: 100%;
 }
 
 </style>

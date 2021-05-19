@@ -1,7 +1,13 @@
 <template>
   <the-header> </the-header>
     <div id="app">
-      <router-view> </router-view>
+      <router-view v-slot="{ Component }">
+        <transition>
+          <keep-alive>
+            <component :is="Component" />
+          </keep-alive>
+        </transition>
+      </router-view>
     </div>
   <the-footer> </the-footer>
 </template>
@@ -17,6 +23,16 @@ export default {
 
 <style>
 
+@keyframes fade {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
 * {
   padding: 0;
   margin: 0;
@@ -30,6 +46,13 @@ export default {
 
 .router-link-active {
   border-bottom: black solid 2px;
+}
+
+.isloading {
+  display: flex;
+  padding: auto;
+  margin: 10rem auto;
+  justify-content: center;
 }
 
 </style>

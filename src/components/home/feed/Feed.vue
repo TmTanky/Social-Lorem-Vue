@@ -110,7 +110,8 @@ main {
 .onepost {
     padding: 1rem;
     background-color: rgb(250, 250, 250);
-    box-shadow: 0 8px 6px -10px black;
+    box-shadow: 0 8px 6px -8px black;
+    border: solid black 2px;
     border-radius: 3px;
     margin: 1rem 0rem;
     width: inherit;

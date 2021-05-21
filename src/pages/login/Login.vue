@@ -80,6 +80,9 @@ export default {
             this.$store.dispatch('setUser', data.data.loginUser)
             this.$router.push('/home')
 
+            this.email = ""
+            this.password = ""
+
         },
         closeError() {
             this.isError = false

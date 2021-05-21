@@ -13,6 +13,11 @@ export default {
     components: {
         Sidebar,
         Feed
+    },
+    data() {
+        return {
+            loading: true
+        }
     }
 }
 </script>

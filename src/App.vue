@@ -2,6 +2,7 @@
   <the-header> </the-header>
     <div id="app">
       <router-view v-slot="{ Component }">
+        <the-searchbar v-if="isLoggedIn" > </the-searchbar>
         <transition>
           <keep-alive>
             <component :is="Component" />
@@ -15,9 +16,15 @@
 <script>
 import TheHeader from './components/header/TheHeader.vue'
 import TheFooter from './components/footer/TheFooter.vue'
+import TheSearchbar from './components/searchbar/TheSearchbar.vue'
 
 export default {
-  components: { TheHeader, TheFooter }
+  components: { TheHeader, TheFooter, TheSearchbar },
+  computed: {
+    isLoggedIn() {
+      return this.$store.state.isLoggedIn
+    }
+  }
 }
 </script>
 
@@ -53,6 +60,17 @@ export default {
   padding: auto;
   margin: 10rem auto;
   justify-content: center;
+}
+
+.pageloading {
+  position: absolute;
+  background-color: black;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 </style>

@@ -11,10 +11,16 @@
         <transition name="mebox">
             <div class="me" v-if="isDone && !isLoading">
                 <div class="mename">
-                    <h1> {{ firstName }} {{ lastName }} </h1>
+                    
+                    <transition name="openeditname" >
+                        <edit-name :getUsername="getUsername" :firstName="firstName" :lastName="lastName" v-if="isEditName" :toggle="editNameOpen" > </edit-name>
+                    </transition>
+
+                    <h1> {{ firstName }} {{ lastName }} <img class="editname" @click="editNameOpen" src="https://img.icons8.com/material-sharp/25/000000/edit--v1.png"/> </h1>
+                    <p> @{{ firstName.toLowerCase() }}-{{ lastName.toLowerCase() }} </p>
                     <div class="follow">
-                        <strong> <p> Following: {{ myFollowing.length }} </p> </strong>
-                        <strong> <p> Followers: {{ myFollowers.length }} </p> </strong>
+                        <strong> <p class="following" > Following: {{ myFollowing.length }} </p> </strong>
+                        <strong> <p class="followers" > Followers: {{ myFollowers.length }} </p> </strong>
                     </div>
                 </div>
             </div>
@@ -30,10 +36,16 @@
             <div class="onepost" v-for="post in myPosts" :key="post._id" >
                 <div class="head">
                     <div class="headtitle">
-                        <h2> {{ post.postBy.firstName }} {{ post.postBy.lastName }} </h2>
+                        <h2> {{ firstName }} {{ lastName }} </h2>
                     </div>
-                    <div @click="deletePost(post._id)" class="headdelete">
-                        <img src="https://img.icons8.com/material-sharp/30/000000/delete-forever.png"/>
+                    <div>
+                        
+                        <transition name="openeditpost">
+                            <edit-post :getData="getData" :selectedID="selectedID" :myPosts="myPosts" :isOpen="isEditOpen" :closeForm="editOpen" > </edit-post>
+                        </transition>
+
+                        <img class="headedit" @click="editOpen(post._id)" src="https://img.icons8.com/material-sharp/25/000000/edit--v1.png"/>
+                        <img class="headdelete" @click="deletePost(post._id)" src="https://img.icons8.com/material-sharp/25/000000/delete-forever.png"/>
                     </div>
                 </div>
 
@@ -48,25 +60,51 @@
 
 <script>
 import axios from 'axios'
+
+// Components
 import BeatLoader from 'vue-spinner/src/BeatLoader.vue'
+import EditPost from '../../profile/editPost/EditPost.vue'
+import EditName from '../../profile/editName/EditName.vue'
 
 export default {
     components: {
-        BeatLoader
+        BeatLoader,
+        EditPost,
+        EditName
     },
     data() {
         return {
+            pwet: 'asdfasdf',
             firstName: null,
             lastName: null,
             isDone: false,
             myPosts: [],
             isLoading: true,
+            isEditName: false,
             isEmpty: null,
             myFollowing: [],
-            myFollowers: []
+            myFollowers: [],
+            isEditOpen: false,
+            selectedID: ""
         }
     },
     methods: {
+        editOpen(postID) {
+            if (this.isEditOpen === true) {
+                this.isEditOpen = false
+                return this.selectedID = ""
+            }
+
+            this.isEditOpen = true
+            this.selectedID = postID
+        },
+        editNameOpen() {
+            if (this.isEditName === true) {
+                return this.isEditName = false
+            }
+
+            this.isEditName = true
+        },
         async getUsername() {
             const {data} = await axios.post('http://localhost:8000/graphql', {
                 query: `query getUsername($userID: ID) {
@@ -184,6 +222,7 @@ main {
 .title {
     background-color: black;
     padding: 1rem;
+    margin: 0rem 1rem;
     padding-top: 4rem;
     padding-bottom: 1rem;
 }
@@ -209,9 +248,11 @@ main {
 .onepost {
     padding: 1rem;
     background-color: rgb(250, 250, 250);
-    box-shadow: 0 8px 6px -10px black;
+    box-shadow: 0 8px 6px -8px black;
+    border: solid black 2px;
     border-radius: 3px;
     margin: 1rem;
+
     width: inherit;
 }
 
@@ -222,20 +263,25 @@ main {
 }
 
 .follow {
+    padding-top: 0.2rem;
     display: flex;
 }
 
-.follow p {
-    margin: 0rem 0.2rem;
+.followers {
+    margin-left: 0.5rem;
 }
 
 .mebox-enter-active,
 .posts-enter-active,
-.noposts-enter-active {
+.noposts-enter-active,
+.openeditname-enter-active,
+.openeditpost-enter-active {
     animation: fade 0.25s ease-in;
 }
 
-.posts-leave-active {
+.posts-leave-active,
+.openeditname-leave-active,
+.openeditpost-leave-active {
     animation: fade 0.5s ease-in reverse;
 }
 
@@ -248,10 +294,16 @@ main {
     flex: 1;
 }
 
+.head .headedit {
+    cursor: pointer;
+}
+
+
 .head .headdelete {
-    flex: 1;
-    display: flex;
-    justify-content: flex-end;
+    cursor: pointer;
+}
+
+.editname {
     cursor: pointer;
 }
 

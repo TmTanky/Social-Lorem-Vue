@@ -15,7 +15,6 @@
                     <transition name="openeditname" >
                         <edit-name :getUsername="getUsername" :firstName="firstName" :lastName="lastName" v-if="isEditName" :toggle="editNameOpen" > </edit-name>
                     </transition>
-
                     <h1> {{ firstName }} {{ lastName }} <img class="editname" @click="editNameOpen" src="https://img.icons8.com/material-sharp/25/000000/edit--v1.png"/> </h1>
                     <p> @{{ firstName.toLowerCase() }}-{{ lastName.toLowerCase() }} </p>
                     <div class="follow">
@@ -36,7 +35,7 @@
             <div class="onepost" v-for="post in myPosts" :key="post._id" >
                 <div class="head">
                     <div class="headtitle">
-                        <h2> {{ firstName }} {{ lastName }} </h2>
+                        <h2> {{ post.postBy.firstName }} {{post.postBy.lastName }} </h2>
                     </div>
                     <div>
                         
@@ -54,6 +53,10 @@
                 </div>
             </div>
         </transition-group>
+
+        <h1 v-if="isNoPosts" > No more posts available </h1>
+
+        <span> <button :disabled="isNoPosts" @click="paginate" class="loadmore" > Load Old Posts </button> </span>
 
     </main>
 </template>
@@ -85,7 +88,10 @@ export default {
             myFollowing: [],
             myFollowers: [],
             isEditOpen: false,
-            selectedID: ""
+            selectedID: "",
+            limitCount: 5,
+            skipCount: 0,
+            isNoPosts: false
         }
     },
     methods: {
@@ -147,7 +153,7 @@ export default {
                 this.isEmpty = true
             }
 
-            this.myPosts = data.data.getUsersPosts.sort(() => -1)
+            this.myPosts = data.data.getUsersPosts
             this.isLoading = false
 
         },
@@ -184,6 +190,84 @@ export default {
             })
             this.myFollowing = data.data.getFollow.following
             this.myFollowers =  data.data.getFollow.followers
+        },
+        async paginate() {
+
+            this.limitCount+=5
+
+            const {data} = await axios.post('http://localhost:8000/graphql', {
+                query: `query paginate($userID: ID, $limitCount: Int, $skipCount: Int) {
+                    paginate(userID: $userID, limitCount: $limitCount, skipCount: $skipCount) {
+                        _id
+                        content
+                        createdAt
+                        postBy {
+                            _id
+                            firstName
+                            lastName
+                        }
+                    }
+                }`,
+                variables: {
+                    userID: this.userID,
+                    limitCount: this.limitCount,
+                    skipCount: this.skipCount
+                }
+            })
+
+            // this.skipCount+=5
+
+            console.log(data)
+
+            // if (data.data.paginate.length === this.myPosts.length) {
+            //     this.isNoPosts = true
+            //     return 
+            // }
+
+            if (data.data.paginate.length === 0) {
+                this.isLoading = false
+                return
+            }
+
+            this.myPosts = data.data.paginate
+            this.isLoading = false
+
+        },
+        async reversePaginate() {
+            
+            this.skipCount-=5
+
+            const {data} = await axios.post('http://localhost:8000/graphql', {
+                query: `query reversePaginate($userID: ID, $limitCount: Int, $skipCount: Int) {
+                    reversePaginate(userID: $userID, limitCount: $limitCount, skipCount: $skipCount) {
+                        _id
+                        content
+                        createdAt
+                        postBy {
+                            _id
+                            firstName
+                            lastName
+                        }
+                    }
+                }`,
+                variables: {
+                    userID: this.userID,
+                    limitCount: this.limitCount,
+                    skipCount: this.postLength
+                }
+            })
+
+            console.log(this.skipCount)
+            console.log(data)
+
+            if (data.data.reversePaginate === null) {
+                this.isLoading = false
+                return
+            }
+
+            this.myPosts = data.data.reversePaginate
+            this.isLoading = false
+
         }
     },
     created() {
@@ -194,9 +278,24 @@ export default {
     updated() {
         this.getData()
     },
+    watch: {
+        limitCount() {
+            if (this.limitCount < 0) {
+                this.limitCount = 0
+            }
+        },
+        skipCount() {
+            if (this.skipCount < 0) {
+                this.skipCount = 0
+            }
+        }
+    },
     computed: {
         userID() {
             return this.$store.state.user._id
+        },
+        postLength() {
+            return this.myPosts.length - 5
         }
     }
 }
@@ -304,6 +403,24 @@ main {
 }
 
 .editname {
+    cursor: pointer;
+}
+
+.loadmore {
+    border: none;
+    background-color: black;
+    color: white;
+    padding: 0.5rem;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    transition-duration: 0.5s;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    margin-left: 1rem;
+}
+
+.loadmore:hover {
+    background-color: rgba(0, 0, 0, 0.8);
     cursor: pointer;
 }
 

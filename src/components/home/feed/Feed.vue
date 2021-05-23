@@ -68,7 +68,7 @@ export default {
                 this.isEmpty = true
             }
 
-            this.myPosts = data.data.getUsersPosts.sort(() => -1)
+            this.myPosts = data.data.getUsersPosts
             this.isLoading = false
 
         },

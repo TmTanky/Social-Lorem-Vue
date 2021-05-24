@@ -67,7 +67,7 @@ export default {
                 this.isLoading = false
                 this.isEmpty = true
             }
-
+            
             this.myPosts = data.data.getUsersPosts
             this.isLoading = false
 

@@ -11,16 +11,18 @@
         <transition name="mebox">
             <div class="me" v-if="isDone && !isLoading">
                 <div class="mename">
-                    
+
                     <transition name="openeditname" >
                         <edit-name :getUsername="getUsername" :firstName="firstName" :lastName="lastName" v-if="isEditName" :toggle="editNameOpen" > </edit-name>
                     </transition>
+
                     <h1> {{ firstName }} {{ lastName }} <img class="editname" @click="editNameOpen" src="https://img.icons8.com/material-sharp/25/000000/edit--v1.png"/> </h1>
-                    <p> @{{ firstName.toLowerCase() }}-{{ lastName.toLowerCase() }} </p>
+                    <p> @{{ username }} </p>
                     <div class="follow">
                         <strong> <p class="following" > Following: {{ myFollowing.length }} </p> </strong>
                         <strong> <p class="followers" > Followers: {{ myFollowers.length }} </p> </strong>
                     </div>
+                    
                 </div>
             </div>
         </transition>
@@ -80,6 +82,7 @@ export default {
             pwet: 'asdfasdf',
             firstName: null,
             lastName: null,
+            username: null,
             isDone: false,
             myPosts: [],
             isLoading: true,
@@ -117,6 +120,7 @@ export default {
                     getUsername(userID: $userID) {
                         firstName
                         lastName
+                        username
                     }
                 }`,
                 variables: {
@@ -126,6 +130,7 @@ export default {
 
             this.firstName = data.data.getUsername.firstName 
             this.lastName = data.data.getUsername.lastName
+            this.username = data.data.getUsername.username
             this.isDone = true
 
         },
@@ -188,6 +193,7 @@ export default {
                     userID: this.userID
                 }
             })
+
             this.myFollowing = data.data.getFollow.following
             this.myFollowers =  data.data.getFollow.followers
         },
@@ -216,8 +222,6 @@ export default {
             })
 
             // this.skipCount+=5
-
-            console.log(data)
 
             // if (data.data.paginate.length === this.myPosts.length) {
             //     this.isNoPosts = true
@@ -256,9 +260,6 @@ export default {
                     skipCount: this.postLength
                 }
             })
-
-            console.log(this.skipCount)
-            console.log(data)
 
             if (data.data.reversePaginate === null) {
                 this.isLoading = false

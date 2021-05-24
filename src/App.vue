@@ -2,7 +2,7 @@
   <the-header> </the-header>
     <div id="app">
       <router-view v-slot="{ Component }">
-        <!-- <the-searchbar v-if="isLoggedIn" > </the-searchbar> -->
+        <the-searchbar v-if="isLoggedIn" > </the-searchbar>
         <transition>
             <component :is="Component" />
         </transition>

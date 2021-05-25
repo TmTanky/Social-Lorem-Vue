@@ -127,7 +127,7 @@ export default {
                     userID: this.userID
                 }
             })
-
+            console.log(data)
             this.firstName = data.data.getUsername.firstName 
             this.lastName = data.data.getUsername.lastName
             this.username = data.data.getUsername.username
@@ -152,8 +152,8 @@ export default {
                     userID: this.userID
                 }
             })
-
-            if (data.data.getUsersPosts.length === 0) {
+            console.log(data)
+            if (data.data.getUsersPosts && data.data.getUsersPosts.length === 0) {
                 this.isLoading = false
                 this.isEmpty = true
             }
@@ -193,7 +193,7 @@ export default {
                     userID: this.userID
                 }
             })
-
+            console.log(data)
             this.myFollowing = data.data.getFollow.following
             this.myFollowers =  data.data.getFollow.followers
         },

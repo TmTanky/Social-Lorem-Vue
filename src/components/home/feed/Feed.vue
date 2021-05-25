@@ -18,8 +18,20 @@
 
         <transition-group name="posts" >
             <div class="onepost" v-for="post in myPosts" :key="post._id" >
-                <h2> {{ post.postBy.firstName }} {{ post.postBy.lastName }} </h2>
-                <p> {{ post.content }} </p>
+                <div class="postdetails">
+                    <h2> {{ post.postBy.firstName }} {{ post.postBy.lastName }} </h2>
+                    <p> {{ post.content }} </p>
+                </div>
+
+                <div class="reactcount">
+                    <p class="likecount" > Likes: 0 </p>
+                    <p> Comments: 0 </p>
+                </div>
+
+                <div class="react">
+                    <div class="like"> <img src="https://img.icons8.com/material-sharp/24/000000/facebook-like--v1.png"/> </div>
+                    <div class="comment"> <img src="https://img.icons8.com/material-sharp/24/000000/topic.png"/> </div>
+                </div>
             </div>
         </transition-group>
 
@@ -62,10 +74,14 @@ export default {
                     userID: this.userID
                 }
             })
-            
+            console.log(data)
             if (data.data.getUsersPosts.length === 0) {
                 this.isLoading = false
                 this.isEmpty = true
+            }
+
+            if (data.data.getUsersPosts.length > 0) {
+                this.isEmpty = false
             }
             
             this.myPosts = data.data.getUsersPosts
@@ -115,6 +131,49 @@ main {
     border-radius: 3px;
     margin: 1rem 0rem;
     width: inherit;
+    display: flex;
+    flex-direction: column;
+}
+
+.onepost .postdetails {
+    padding-bottom: 1rem;
+}
+
+.react {
+    display: flex;
+    border-top: 1px solid black;
+}
+
+.reactcount {
+    display: flex;
+    padding-bottom: 0.2rem;
+}
+
+.reactcount p.likecount {
+    margin-right: 0.5rem;
+}
+
+.react .like,
+.react .comment {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 0.5rem 0rem;
+    transition-property: all;
+    transition-duration: 0.3s;
+    cursor: pointer;
+}
+
+.react .like {
+    border-right: black solid 1px;
+}
+
+.react .like:hover {
+    background-color: rgba(134, 131, 131, 0.3);
+}
+
+.react .comment:hover {
+    background-color: rgba(134, 131, 131, 0.3);
 }
 
 .noposts {

@@ -45,7 +45,7 @@
 <script>
 import axios from 'axios'
 
-// Componets
+// Components
 import BeatLoader from 'vue-spinner/src/BeatLoader.vue'
 
 export default {
@@ -86,16 +86,38 @@ export default {
                 }
             })
 
-            // console.log(data.data.viewUser)
+            // console.log(data)
+
             this.isDoneLoading = true
-            // console.log(this.$route.params.username)
             this.user = data.data.viewUser
 
         },
-        async follow(toFollowID) {
-            // console.log(toFollowID)
-            // console.log(this.userID)
+        async getData() {
+            const {data} = await axios.post('http://localhost:8000/graphql', {
+                query: `query viewUserPosts($username: String) {
+                    viewUserPosts(username: $username) {
+                        _id
+                        createdAt
+                        content
+                        postBy {
+                            firstName
+                            lastName
+                        }
+                    }
+                }`,
+                variables: {
+                    username: this.$route.params.username
+                }
+            })
 
+            if (data.data.viewUserPosts.length === 0) {
+                this.isEmpty = true
+            }
+            
+            this.myPosts = data.data.viewUserPosts    
+
+        },
+        async follow(toFollowID) {
             const {data} = await axios.post('http://localhost:8000/graphql', {
                 query: `mutation followUser($userID: ID!, $toFollowID: ID!) {
                     followUser(userID: $userID, toFollowID: $toFollowID)
@@ -109,39 +131,10 @@ export default {
             console.log(data)
 
             await this.search()
-        },
-        async getData() {
-            const {data} = await axios.post('http://localhost:8000/graphql', {
-                query: `query getUsersPosts($userID: ID) {
-                    getUsersPosts(userID: $userID) {
-                        _id
-                        content
-                        createdAt
-                        postBy {
-                            _id
-                            firstName
-                            lastName
-                        }
-                    }
-                }`,
-                variables: {
-                    userID: this.viewedUserID
-                }
-            })
-            
-            if (data.data.getUsersPosts.length === 0) {
-                this.isLoading = false
-                this.isEmpty = true
-            }
-
-            console.log(data)
-
-            this.myPosts = data.data.getUsersPosts
-            this.isLoading = false
-
         }
     },
     async created() {
+        // await this.getData()
         await this.search(this.$route.params.username)
         await this.getData()
     },
@@ -161,12 +154,10 @@ export default {
         }
     },
     watch: {
-        async $route(value) {
+        $route(value) {
             this.isEmpty = false
-            await this.search(value.params.username)
-            await this.getData()
-            // this.isEmpty = false
-            // await this.getData()
+            this.search(value.params.username)
+            this.getData()
         }
     }
 }
@@ -252,6 +243,10 @@ main {
     border-radius: 3px;
     margin: 1rem 0rem;
     width: inherit;
+}
+
+.onepost h2 {
+    padding-bottom: 1rem;
 }
 
 .noposts {

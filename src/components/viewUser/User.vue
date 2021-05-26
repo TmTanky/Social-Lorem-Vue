@@ -33,8 +33,31 @@
 
             <transition-group name="posts" >
                 <div class="onepost" v-for="post in myPosts" :key="post._id" >
-                    <h2> {{ post.postBy.firstName }} {{ post.postBy.lastName }} </h2>
-                    <p> {{ post.content }} </p>
+                    <div class="postdetails">
+                        <h2> {{ post.postBy.firstName }} {{ post.postBy.lastName }} </h2>
+                        <p> {{ post.content }} </p>
+                    </div>
+
+                    <div class="reactcount">
+                        <p class="likecount" @click="toggleLikes(post._id)" > Likes: {{ post.likes.length }} </p>
+                        <p> Comments: 0 </p>
+                    </div>
+
+                    <div class="react">
+                        <transition mode="out-in" name="reacting" >
+                            <div v-if="post.likes.filter(user => user._id === userID).length === 1" @click="like(post._id)" class="like">
+                                <img class="imglike" src="https://img.icons8.com/material-sharp/24/000000/facebook-like--v1.png"/>
+                            </div>
+
+                            <div v-else @click="like(post._id)" class="like"> 
+                                <img class="imglike" src="https://img.icons8.com/material-outlined/24/000000/facebook-like--v1.png"/>
+                            </div>   
+                        </transition> 
+
+                        <div @click="toggleComments(post._id)" class="comment">
+                            <img class="imgcomment" src="https://img.icons8.com/material-sharp/24/000000/topic.png"/>
+                        </div>
+                    </div>
                 </div>
             </transition-group>
 
@@ -103,6 +126,11 @@ export default {
                             firstName
                             lastName
                         }
+                        likes {
+                            _id
+                            firstName
+                            lastName
+                        }
                     }
                 }`,
                 variables: {
@@ -110,7 +138,7 @@ export default {
                 }
             })
 
-            if (data.data.viewUserPosts.length === 0) {
+            if (data.data.viewUserPosts && data.data.viewUserPosts.length === 0) {
                 this.isEmpty = true
             }
             
@@ -131,6 +159,32 @@ export default {
             console.log(data)
 
             await this.search()
+        },
+        async like(postID) {
+            const {data} = await axios.post('http://localhost:8000/graphql', {
+                query: `mutation reactToPost($postID: ID!, $userID: ID!) {
+                    reactToPost(postID: $postID, userID: $userID)
+                }`,
+                variables: {
+                    postID,
+                    userID: this.userID
+                }
+            })
+
+            console.log(data)
+            await this.refetch()
+
+        },
+        async refetch() {
+            await this.getData()
+        },
+        toggleLikes(postID) {
+            this.openLikes = true
+            // this.$router.push('/viewlikes/')
+            this.$router.push({name: 'viewlikes', params: {postID}})
+        },
+        toggleComments(postID) {
+            this.$router.push({name: 'viewcomments', params: {postID}})
         }
     },
     async created() {
@@ -172,6 +226,20 @@ export default {
 
     100% {
         opacity: 1;
+    }
+}
+
+@keyframes enlarge {
+    0% {
+        transform: rotate(20deg);
+    }
+
+    50% {
+        transform: rotate(-20deg);
+    }
+
+    100% {
+        transform: rotate(0);
     }
 }
 
@@ -249,10 +317,66 @@ main {
     padding-bottom: 1rem;
 }
 
+.onepost .postdetails {
+    padding-bottom: 1rem;
+}
+
+.react {
+    display: flex;
+    border-top: 1px solid black;
+}
+
+.reactcount {
+    display: flex;
+    padding-bottom: 0.2rem;
+}
+
+.reactcount p.likecount {
+    cursor: pointer;
+    margin-right: 0.5rem;
+}
+
+.react .like,
+.react .comment {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 0.5rem 0rem;
+    transition-property: all;
+    transition-duration: 0.3s;
+    cursor: pointer;
+}
+
+.react .comment {
+    border-left: black solid 1px;
+}
+
+.react .like .imglike {
+    transition-property: all;
+    transition-duration: 0.3s;
+}
+
+.react .like .imglike:hover {
+    transform: scale(1.2);
+}
+
+.react .comment .imgcomment {
+    transition-property: all;
+    transition-duration: 0.3s;
+}
+
+.react .comment .imgcomment:hover {
+    transform: scale(1.2);
+}
+
 .noposts {
     padding-top: 5rem;
     display: flex;
     justify-content: center;
+}
+
+.reacting-enter-active {
+    animation: enlarge 0.25s ease-in;
 }
 
 .posts-enter-active,

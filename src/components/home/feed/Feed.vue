@@ -24,13 +24,22 @@
                 </div>
 
                 <div class="reactcount">
-                    <p class="likecount" > Likes: 0 </p>
+                    <p class="likecount" @click="toggleLikes(post._id)" > Likes: {{ post.likes.length }} </p>
                     <p> Comments: 0 </p>
                 </div>
 
                 <div class="react">
-                    <div class="like"> <img src="https://img.icons8.com/material-sharp/24/000000/facebook-like--v1.png"/> </div>
-                    <div class="comment"> <img src="https://img.icons8.com/material-sharp/24/000000/topic.png"/> </div>
+                    <transition mode="out-in" name="reacting" >
+                        <div v-if="post.likes.filter(user => user._id === userID).length === 1" @click="like(post._id)" class="like">
+                            <img class="imglike" src="https://img.icons8.com/material-sharp/24/000000/facebook-like--v1.png"/>
+                        </div>
+
+                        <div v-else @click="like(post._id)" class="like"> 
+                            <img class="imglike" src="https://img.icons8.com/material-outlined/24/000000/facebook-like--v1.png"/>
+                        </div>   
+                    </transition> 
+
+                    <div @click="toggleComments(post._id)" class="comment"> <img class="imgcomment" src="https://img.icons8.com/material-sharp/24/000000/topic.png"/> </div>
                 </div>
             </div>
         </transition-group>
@@ -53,17 +62,24 @@ export default {
             myPosts: [],
             isLoading: true,
             isEmpty: false,
+            openLikes: false,
+            openComments: false
         }
     },
     methods: {
         async getData() {
             const {data} = await axios.post('http://localhost:8000/graphql', {
-                query: `query getUsersPosts($userID: ID) {
-                    getUsersPosts(userID: $userID) {
+                query: `query getAllPosts {
+                    getAllPosts {
                         _id
                         content
                         createdAt
                         postBy {
+                            _id
+                            firstName
+                            lastName
+                        }
+                        likes {
                             _id
                             firstName
                             lastName
@@ -75,21 +91,44 @@ export default {
                 }
             })
             console.log(data)
-            if (data.data.getUsersPosts.length === 0) {
+            if (data.data.getAllPosts.length === 0) {
                 this.isLoading = false
                 this.isEmpty = true
             }
 
-            if (data.data.getUsersPosts.length > 0) {
+            if (data.data.getAllPosts.length > 0) {
                 this.isEmpty = false
             }
             
-            this.myPosts = data.data.getUsersPosts
+            this.myPosts = data.data.getAllPosts
             this.isLoading = false
+
+        },
+        async like(postID) {
+            const {data} = await axios.post('http://localhost:8000/graphql', {
+                query: `mutation reactToPost($postID: ID!, $userID: ID!) {
+                    reactToPost(postID: $postID, userID: $userID)
+                }`,
+                variables: {
+                    postID,
+                    userID: this.userID
+                }
+            })
+
+            console.log(data)
+            await this.refetch()
 
         },
         async refetch() {
             await this.getData()
+        },
+        toggleLikes(postID) {
+            this.openLikes = true
+            // this.$router.push('/viewlikes/')
+            this.$router.push({name: 'viewlikes', params: {postID}})
+        },
+        toggleComments(postID) {
+            this.$router.push({name: 'viewcomments', params: {postID}})
         }
     },
     created() {
@@ -139,6 +178,7 @@ main {
     padding-bottom: 1rem;
 }
 
+
 .react {
     display: flex;
     border-top: 1px solid black;
@@ -150,6 +190,7 @@ main {
 }
 
 .reactcount p.likecount {
+    cursor: pointer;
     margin-right: 0.5rem;
 }
 
@@ -164,16 +205,26 @@ main {
     cursor: pointer;
 }
 
-.react .like {
-    border-right: black solid 1px;
+.react .comment {
+    border-left: black solid 1px;
 }
 
-.react .like:hover {
-    background-color: rgba(134, 131, 131, 0.3);
+.react .like .imglike {
+    transition-property: all;
+    transition-duration: 0.3s;
 }
 
-.react .comment:hover {
-    background-color: rgba(134, 131, 131, 0.3);
+.react .like .imglike:hover {
+    transform: scale(1.2);
+}
+
+.react .comment .imgcomment {
+    transition-property: all;
+    transition-duration: 0.3s;
+}
+
+.react .comment .imgcomment:hover {
+    transform: scale(1.2);
 }
 
 .noposts {
@@ -196,9 +247,43 @@ h2 {
     }
 }
 
-.posts-enter-active,
-.noposts-enter-active {
+@keyframes enlarge {
+    0% {
+        transform: rotate(20deg);
+    }
+
+    50% {
+        transform: rotate(-20deg);
+    }
+
+    100% {
+        transform: rotate(0);
+    }
+}
+
+.noposts-enter-active,
+.posts-enter-active {
     animation: fade 0.25s ease-in;
 }
+
+.reacting-enter-active {
+    animation: enlarge 0.25s ease-in;
+}
+
+/* .reacting-leave-active {
+    animation: fade 0.25s ease-in;
+} */
+
+/* .react .like {
+    border-right: black solid 1px;
+} */
+
+/* .react .like:hover {
+    background-color: rgba(134, 131, 131, 0.3);
+}
+
+.react .comment:hover {
+    background-color: rgba(134, 131, 131, 0.3);
+} */
 
 </style>

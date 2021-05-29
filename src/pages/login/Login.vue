@@ -26,7 +26,8 @@
                 <input type="text" placeholder="Email" name="email" v-model="email">
                 <input type="password" placeholder="Password" name="password" v-model="password">
                 <button> Login </button>
-                <router-link to="/register"> Dont have an account? Register now. </router-link>
+                <router-link class="loginlink" to="/register"> Dont have an account? Register now. </router-link>
+                <router-link to="/resetpassword" > Reset Password </router-link>
             </form>
         </div>
     </main>
@@ -177,7 +178,11 @@ button:hover {
 }
 
 a {
-    margin-top: 0.5rem;
+    color: black;
+}
+
+a.loginlink {
+    margin-bottom: 0.2rem;
 }
 
 /* Error Handling */

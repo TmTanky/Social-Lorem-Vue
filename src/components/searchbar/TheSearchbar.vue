@@ -14,7 +14,7 @@
                     </router-link> -->
 
                         <h3> {{ user.firstName }} {{ user.lastName }} </h3>
-                        <p> {{ user.username }} </p>
+                        <p> @{{ user.username }} </p>
 
                 </div>
             </transition-group>
@@ -104,6 +104,10 @@ button {
 a {
     color: black;
     text-decoration: none;
+}
+
+p {
+    font-size: 0.8rem;
 }
 
 .searchresults {

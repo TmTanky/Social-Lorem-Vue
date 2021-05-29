@@ -99,6 +99,7 @@ main {
     flex: 5;
     flex-direction: column;
     padding: 1rem 2rem;
+    position: relative;
 }
 
 .title {
@@ -142,5 +143,9 @@ main {
 .commentbox-enter-active {
     animation: fade 0.25s ease-in;
 }
+
+/* .spacebottom {
+    margin-bottom: 7rem;
+} */
 
 </style>

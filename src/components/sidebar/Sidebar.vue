@@ -2,6 +2,7 @@
     <div class="sidebar">
         <p @click="toHome"> Home </p>
         <p @click="toProfile"> Profile </p>
+        <p @click="toSettings"> Settings </p>
         <p @click="logout"> Logout </p>
     </div>
 </template>
@@ -19,6 +20,9 @@ export default {
         },
         toHome() {
             this.$router.push('/home')
+        },
+        toSettings() {
+            this.$router.push('/settings')
         }
     }
 }

@@ -19,8 +19,8 @@
                     </div>
 
                     <div class="follow">
-                        <strong> <p class="following" > Following: {{ user.following.length }} </p> </strong>
-                        <strong> <p class="followers" > Followers: {{ user.followers.length }} </p> </strong>
+                        <strong> <p @click="redirectToFollowing(user._id)" class="following" > Following: {{ user.following.length }} </p> </strong>
+                        <strong> <p @click="redirectToFollowers(user._id)" class="followers" > Followers: {{ user.followers.length }} </p> </strong>
                     </div>
                 </div>
             </transition>
@@ -40,7 +40,7 @@
 
                     <div class="reactcount">
                         <p class="likecount" @click="toggleLikes(post._id)" > Likes: {{ post.likes.length }} </p>
-                        <p> Comments: 0 </p>
+                        <p class="commentcount" @click="toggleComments(post._id)" > Comments: {{ post.comments.length }} </p>
                     </div>
 
                     <div class="react">
@@ -54,10 +54,17 @@
                             </div>   
                         </transition> 
 
-                        <div @click="toggleComments(post._id)" class="comment">
+                        <div @click="openComment(post._id)" class="comment">
                             <img class="imgcomment" src="https://img.icons8.com/material-sharp/24/000000/topic.png"/>
                         </div>
                     </div>
+
+                    <div v-if="post.isOpen">
+                        <transition name="commentopen" mode="out-in" >
+                            <create-comment @toggle-refetch="refetchAgain" :postID="post._id" > </create-comment>
+                        </transition>
+                    </div>
+
                 </div>
             </transition-group>
 
@@ -70,10 +77,12 @@ import axios from 'axios'
 
 // Components
 import BeatLoader from 'vue-spinner/src/BeatLoader.vue'
+import CreateComment from '../../components/commentPost/CreateComment.vue'
 
 export default {
     components: {
-        BeatLoader
+        BeatLoader,
+        CreateComment
     },
     data() {
         return {
@@ -131,13 +140,27 @@ export default {
                             firstName
                             lastName
                         }
+                        comments {
+                            _id
+                            content
+                            commentBy {
+                                _id
+                                firstName
+                                lastName
+                            }
+                        }
                     }
                 }`,
                 variables: {
                     username: this.$route.params.username
                 }
             })
+            // console.log(data)
+            // data.data.viewUserPosts.forEach(element => {
+            //     element.isOpen = false
+            // })
 
+            console.log(data)
             if (data.data.viewUserPosts && data.data.viewUserPosts.length === 0) {
                 this.isEmpty = true
             }
@@ -185,6 +208,24 @@ export default {
         },
         toggleComments(postID) {
             this.$router.push({name: 'viewcomments', params: {postID}})
+        },
+        openComment(postID) {
+            // console.log(this.myPosts)
+            const toActivated = this.myPosts.find(item => item._id === postID)
+            toActivated.isOpen = !toActivated.isOpen
+            // this.openComments = !this.openComments
+            // console.log(index)
+            // console.log(this.myPosts.indexOf(item => item._id === index))
+        },
+        refetchAgain() {
+            this.refetch()
+            // this.openComment(postID)
+        },
+        redirectToFollowing(userID) {
+            this.$router.push({name: 'viewusersfollowing', params: {userID}})
+        },
+        redirectToFollowers(userID) {
+            this.$router.push({name: 'viewusersfollowers', params: {userID}})
         }
     },
     async created() {
@@ -208,10 +249,18 @@ export default {
         }
     },
     watch: {
-        $route(value) {
+        $route(prevValue,value) {
+            // const params = value.params.username
+            if (prevValue.params.username !== value.params.username) {
+                this.isEmpty = false
+                this.getData()
+                return this.search(value.params.username)
+            }
+
             this.isEmpty = false
-            this.search(value.params.username)
             this.getData()
+            this.search(value.params.username)
+            return
         }
     }
 }
@@ -269,8 +318,13 @@ main {
     display: flex;
 }
 
+.following {
+    cursor: pointer;
+}
+
 .followers {
     margin-left: 0.5rem;
+    cursor: pointer;
 }
 
 .usernames {
@@ -334,6 +388,10 @@ main {
 .reactcount p.likecount {
     cursor: pointer;
     margin-right: 0.5rem;
+}
+
+.reactcount p.commentcount {
+    cursor: pointer;
 }
 
 .react .like,

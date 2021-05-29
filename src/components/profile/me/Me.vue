@@ -19,8 +19,8 @@
                     <h1> {{ firstName }} {{ lastName }} <img class="editname" @click="editNameOpen" src="https://img.icons8.com/material-sharp/25/000000/edit--v1.png"/> </h1>
                     <p> @{{ username }} </p>
                     <div class="follow">
-                        <strong> <p class="following" > Following: {{ myFollowing.length }} </p> </strong>
-                        <strong> <p class="followers" > Followers: {{ myFollowers.length }} </p> </strong>
+                        <strong> <p @click="redirectToFollowing" class="following" > Following: {{ myFollowing.length }} </p> </strong>
+                        <strong> <p @click="redirectToFollowers" class="followers" > Followers: {{ myFollowers.length }} </p> </strong>
                     </div>
                     
                 </div>
@@ -56,7 +56,7 @@
 
                 <div class="reactcount">
                     <p class="likecount" @click="toggleLikes(post._id)" > Likes: {{ post.likes.length }} </p>
-                    <p> Comments: {{ post.comments.length }} </p>
+                    <p class="commentcount" @click="toggleComments(post._id)" > Comments: {{ post.comments.length }} </p>
                 </div>
                 
                 <div class="react">
@@ -70,7 +70,13 @@
                         </div>   
                     </transition> 
 
-                    <div @click="toggleComments(post._id)" class="comment"> <img class="imgcomment" src="https://img.icons8.com/material-sharp/24/000000/topic.png"/> </div>
+                    <div @click="openComment(post._id)" class="comment"> <img class="imgcomment" src="https://img.icons8.com/material-sharp/24/000000/topic.png"/> </div>
+                </div>
+
+                <div v-if="post.isOpen">
+                    <transition name="commentopen" mode="out-in" >
+                        <create-comment @toggle-refetch="refetchAgain" :postID="post._id" > </create-comment>
+                    </transition>
                 </div>
 
             </div>
@@ -78,7 +84,7 @@
 
         <h1 v-if="isNoPosts" > No more posts available </h1>
 
-        <span> <button :disabled="isNoPosts" @click="paginate" class="loadmore" > Load Old Posts </button> </span>
+        <span v-if="isDone && !isLoading" > <button :disabled="isNoPosts" @click="paginate" class="loadmore" > Load Old Posts </button> </span>
 
     </main>
 </template>
@@ -90,12 +96,14 @@ import axios from 'axios'
 import BeatLoader from 'vue-spinner/src/BeatLoader.vue'
 import EditPost from '../../profile/editPost/EditPost.vue'
 import EditName from '../../profile/editName/EditName.vue'
+import CreateComment from '../../commentPost/CreateComment.vue'
 
 export default {
     components: {
         BeatLoader,
         EditPost,
-        EditName
+        EditName,
+        CreateComment
     },
     data() {
         return {
@@ -186,7 +194,14 @@ export default {
                     userID: this.userID
                 }
             })
+            // console.log(data)
+
+            data.data.getUsersPosts.forEach(element => {
+                element.isOpen = false
+            })
+
             console.log(data)
+
             if (data.data.getUsersPosts && data.data.getUsersPosts.length === 0) {
                 this.isLoading = false
                 this.isEmpty = true
@@ -251,6 +266,15 @@ export default {
                             firstName
                             lastName
                         }
+                        comments {
+                            _id
+                            content
+                            commentBy {
+                                _id
+                                firstName
+                                lastName
+                            }
+                        }        
                     }
                 }`,
                 variables: {
@@ -260,12 +284,17 @@ export default {
                 }
             })
 
+            data.data.paginate.forEach(element => {
+                element.isOpen = false
+            })
             // this.skipCount+=5
 
             // if (data.data.paginate.length === this.myPosts.length) {
             //     this.isNoPosts = true
             //     return 
             // }
+
+            console.log(data)
 
             if (data.data.paginate.length === 0) {
                 this.isLoading = false
@@ -334,6 +363,24 @@ export default {
         },
         toggleComments(postID) {
             this.$router.push({name: 'viewcomments', params: {postID}})
+        },
+        openComment(postID) {
+            // console.log(this.myPosts)
+            const toActivated = this.myPosts.find(item => item._id === postID)
+            toActivated.isOpen = !toActivated.isOpen
+            // this.openComments = !this.openComments
+            // console.log(index)
+            // console.log(this.myPosts.indexOf(item => item._id === index))
+        },
+        refetchAgain() {
+            this.refetch()
+            // this.openComment(postID)
+        },
+        redirectToFollowing() {
+            this.$router.push({name: 'viewmyfollowing', params: {userID: this.userID}})
+        },
+        redirectToFollowers() {
+            this.$router.push({name: 'viewmyfollowers', params: {userID: this.userID}})
         }
     },
     created() {
@@ -439,6 +486,10 @@ main {
     margin-right: 0.5rem;
 }
 
+.reactcount p.commentcount {
+    cursor: pointer;
+}
+
 .react .like,
 .react .comment {
     flex: 1;
@@ -483,8 +534,13 @@ main {
     display: flex;
 }
 
+.following {
+    cursor: pointer;
+}
+
 .followers {
     margin-left: 0.5rem;
+    cursor: pointer;
 }
 
 @keyframes enlarge {

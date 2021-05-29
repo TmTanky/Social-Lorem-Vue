@@ -19,13 +19,15 @@
         <transition-group name="posts" >
             <div class="onepost" v-for="post in myPosts" :key="post._id" >
                 <div class="postdetails">
-                    <h2> {{ post.postBy.firstName }} {{ post.postBy.lastName }} </h2>
+                    <router-link :to="{name: 'oneuser', params: {username: post.postBy.username}}">
+                        <strong> {{ post.postBy.firstName }} {{ post.postBy.lastName }} </strong>
+                    </router-link>
                     <p> {{ post.content }} </p>
                 </div>
 
                 <div class="reactcount">
                     <p class="likecount" @click="toggleLikes(post._id)" > Likes: {{ post.likes.length }} </p>
-                    <p> Comments: 0 </p>
+                    <p class="commentcount" @click="toggleComments(post._id)" > Comments: {{ post.comments.length }} </p>
                 </div>
 
                 <div class="react">
@@ -39,8 +41,15 @@
                         </div>   
                     </transition> 
 
-                    <div @click="toggleComments(post._id)" class="comment"> <img class="imgcomment" src="https://img.icons8.com/material-sharp/24/000000/topic.png"/> </div>
+                    <div @click="openComment(post._id)" class="comment"> <img class="imgcomment" src="https://img.icons8.com/material-sharp/24/000000/topic.png"/> </div>
                 </div>
+                
+                <div v-if="post.isOpen">
+                    <transition name="commentopen" mode="out-in" >
+                        <create-comment @toggle-refetch="refetchAgain" :postID="post._id" > </create-comment>
+                    </transition>
+                </div>
+
             </div>
         </transition-group>
 
@@ -51,11 +60,13 @@
 import axios from 'axios'
 import CreatePost from '../createPost/CreatePost.vue'
 import BeatLoader from 'vue-spinner/src/BeatLoader.vue'
+import CreateComment from '../../commentPost/CreateComment.vue'
 
 export default {
     components: {
         BeatLoader,
-        CreatePost
+        CreatePost,
+        CreateComment
     },
     data() {
         return {
@@ -78,11 +89,21 @@ export default {
                             _id
                             firstName
                             lastName
+                            username
                         }
                         likes {
                             _id
                             firstName
                             lastName
+                        }
+                        comments {
+                            _id
+                            content
+                            commentBy {
+                                _id
+                                firstName
+                                lastName
+                            }
                         }
                     }
                 }`,
@@ -90,7 +111,11 @@ export default {
                     userID: this.userID
                 }
             })
-            console.log(data)
+
+            data.data.getAllPosts.forEach(element => {
+                element.isOpen = false
+            })
+
             if (data.data.getAllPosts.length === 0) {
                 this.isLoading = false
                 this.isEmpty = true
@@ -129,6 +154,18 @@ export default {
         },
         toggleComments(postID) {
             this.$router.push({name: 'viewcomments', params: {postID}})
+        },
+        openComment(postID) {
+            // console.log(this.myPosts)
+            const toActivated = this.myPosts.find(item => item._id === postID)
+            toActivated.isOpen = !toActivated.isOpen
+            // this.openComments = !this.openComments
+            // console.log(index)
+            // console.log(this.myPosts.indexOf(item => item._id === index))
+        },
+        refetchAgain() {
+            this.refetch()
+            // this.openComment(postID)
         }
     },
     created() {
@@ -148,6 +185,10 @@ export default {
 main {
     flex: 5;
     padding: 1rem 2rem;
+}
+
+h2 {
+    padding-bottom: 1rem;
 }
 
 .title {
@@ -178,6 +219,14 @@ main {
     padding-bottom: 1rem;
 }
 
+.onepost .postdetails a {
+    text-decoration: none;
+    font-size: 1.5rem;
+    color: black;
+}
+.onepost .postdetails p {
+    margin-top: 1rem;
+}
 
 .react {
     display: flex;
@@ -192,6 +241,10 @@ main {
 .reactcount p.likecount {
     cursor: pointer;
     margin-right: 0.5rem;
+}
+
+.reactcount p.commentcount {
+    cursor: pointer;
 }
 
 .react .like,
@@ -233,10 +286,6 @@ main {
     justify-content: center;
 }
 
-h2 {
-    padding-bottom: 1rem;
-}
-
 @keyframes fade {
     0% {
         opacity: 0;
@@ -262,12 +311,17 @@ h2 {
 }
 
 .noposts-enter-active,
-.posts-enter-active {
+.posts-enter-active,
+.commentopen-enter-active {
     animation: fade 0.25s ease-in;
 }
 
 .reacting-enter-active {
     animation: enlarge 0.25s ease-in;
+}
+
+.commentopen-leave-active {
+    animation: fade 0.25s ease-in reverse;
 }
 
 /* .reacting-leave-active {

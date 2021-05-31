@@ -60,6 +60,10 @@ export default {
                 variables: {
                     postID: this.$route.params.postID
                 }
+            }, {
+                headers: {
+                    'authorization': `Bearer ${this.$store.state.user.token}`
+                }
             })
 
             if (data.data.viewPostComments.length === 0) {
@@ -142,6 +146,27 @@ main {
 .noposts-enter-active,
 .commentbox-enter-active {
     animation: fade 0.25s ease-in;
+}
+
+@media screen and (max-width: 500px) {
+
+    main {
+        padding: 0.5rem;
+    }
+
+    .title h1 {
+        font-size: 12vw;
+        text-align: center;
+    }
+
+    .noposts h1 {
+        font-size: 6vw;
+    }
+
+    .onecomment {
+        margin: 0.2rem 0;
+    }
+
 }
 
 /* .spacebottom {

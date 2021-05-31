@@ -110,7 +110,13 @@ export default {
                 variables: {
                     userID: this.userID
                 }
+            }, {
+                headers: {
+                    'authorization': `Bearer ${this.token}`
+                }
             })
+
+            console.log(data)
 
             data.data.getAllPosts.forEach(element => {
                 element.isOpen = false
@@ -137,6 +143,10 @@ export default {
                 variables: {
                     postID,
                     userID: this.userID
+                }
+            }, {
+                headers: {
+                    'authorization': `Bearer ${this.$store.state.user.token}`
                 }
             })
 
@@ -174,6 +184,9 @@ export default {
     computed: {
         userID() {
             return this.$store.state.user._id
+        },
+        token() {
+            return this.$store.state.user.token
         }
     }
 }
@@ -339,5 +352,19 @@ h2 {
 .react .comment:hover {
     background-color: rgba(134, 131, 131, 0.3);
 } */
+
+/* Media Q's */
+
+@media screen and (max-width: 500px) {
+
+    main {
+        padding: 0.5rem;
+    }
+
+    .title h1 {
+        font-size: 15vw;
+    }
+
+}
 
 </style>

@@ -55,6 +55,10 @@ export default {
                 variables: {
                     userID: this.userID
                 }
+            }, {
+                headers: {
+                    'authorization': `Bearer ${this.$store.state.user.token}`
+                }
             })
 
             console.log(data.data.viewUserByID.following)

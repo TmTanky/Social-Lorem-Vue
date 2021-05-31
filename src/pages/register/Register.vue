@@ -59,6 +59,7 @@ export default {
                                 lastName
                             }
                         }
+                        token
                     }
                 }`,
                 variables: {
@@ -66,6 +67,10 @@ export default {
                     lastName: this.lastName,
                     email: this.email,
                     password: this.password
+                }
+            }, {
+                headers: {
+                    'register': 'true'
                 }
             })
 
@@ -198,6 +203,15 @@ button:hover {
 
 .error-leave-active {
     animation: loginError 0.3s ease-out reverse;
+}
+
+@media screen and (max-width: 500px) {
+
+    .registerbox form {
+        width: 95%;
+        padding: 1rem;
+    }
+
 }
 
 </style>

@@ -96,6 +96,10 @@ export default {
                 variables: {
                     userID: this.userID
                 }
+            }, {
+                headers: {
+                    'authorization': `Bearer ${this.$store.state.user.token}`
+                }
             })
 
             this.user = data.data.viewUserByID
@@ -116,6 +120,10 @@ export default {
                 variables: {
                     userID: this.userID,
                     newUsername: this.$refs.username.value
+                }
+            }, {
+                headers: {
+                    'authorization': `Bearer ${this.$store.state.user.token}`
                 }
             })
 
@@ -142,6 +150,10 @@ export default {
                 variables: {
                     userID: this.userID,
                     newPass: this.newPass
+                }
+            }, {
+                headers: {
+                    'authorization': `Bearer ${this.$store.state.user.token}`
                 }
             })
 
@@ -297,6 +309,27 @@ input.newpass {
 
 .changebox-enter-active {
     animation: fade 0.3s ease-in;
+}
+
+@media screen and (max-width: 500px) {
+
+    main {
+        padding: 0.5rem;
+    }
+
+    .title {
+        margin: 0;
+    }
+
+    .title h1 {
+        font-size: 15vw;
+    }
+
+    .userinfo h1,
+    .userpass h1 {
+        font-size: 10vw;
+    }
+
 }
 
 </style>

@@ -52,6 +52,10 @@ export default {
                 variables: {
                     postID: this.$route.params.postID
                 }
+            }, {
+                headers: {
+                    'authorization': `Bearer ${this.$store.state.user.token}`
+                }
             })
 
             this.thePost = data.data.viewLikes.likes
@@ -124,6 +128,23 @@ main {
 
 .likers-enter-active {
     animation: fade 0.3s ease-in;
+}
+
+@media screen and (max-width: 500px) {
+
+    main {
+        padding: 0.5rem;
+    }
+
+    .title h1 {
+        font-size: 10vw;
+        text-align: center;
+    }
+
+    .noposts h1 {
+        font-size: 8vw;
+    }
+
 }
 
 </style>

@@ -61,6 +61,10 @@ export default {
                 variables: {
                     userID: this.$route.params.userID
                 }
+            }, {
+                headers: {
+                    'authorization': `Bearer ${this.$store.state.user.token}`
+                }
             })
 
             console.log(data.data.viewUserByID._id)
@@ -143,6 +147,26 @@ main .onefollower {
 .following-enter-active,
 .nofollowing-enter-active {
     animation: fade 0.3s ease-in;
+}
+
+@media screen and (max-width: 500px) {
+
+    main {
+        padding: 0.5rem;
+    }
+
+    .title {
+        margin: 0;
+    }
+
+    .title h1 {
+        font-size: 10vw;
+    }
+
+    main .onefollower {
+        margin: 0.2rem 0;
+    }
+
 }
 
 </style>

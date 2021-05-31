@@ -28,6 +28,10 @@ export default {
                     postID: this.selectedID,
                     content: this.$refs.content.value
                 }
+            }, {
+                headers: {
+                    'authorization': `Bearer ${this.$store.state.user.token}`
+                }
             })
 
             await this.getData()
@@ -67,6 +71,9 @@ textarea {
 
 form {
     display: flex;
+    margin: auto;
+    width: 50%;
+    justify-content: center;
     flex-direction: column;
     padding: 2rem;
     background-color: white;
@@ -87,6 +94,26 @@ form button {
 form button:hover {
     cursor: pointer;
     background-color: rgba(0, 0, 0, 0.8);
+}
+
+@media screen and (max-width: 950px) {
+
+    form {
+        width: 80%;
+    }
+
+}
+
+@media screen and (max-width: 600px) {
+
+    dialog {
+        padding: 1rem;
+    }
+
+    form {
+        width: 100%;
+    }
+
 }
 
 </style>

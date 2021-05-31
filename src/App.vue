@@ -3,6 +3,7 @@
     <div id="app">
       <router-view v-slot="{ Component }">
         <the-searchbar v-if="isLoggedIn" > </the-searchbar>
+        <topbar v-if="isLoggedIn" > </topbar>
         <transition>
             <component :is="Component" />
         </transition>
@@ -15,9 +16,10 @@
 import TheHeader from './components/header/TheHeader.vue'
 import TheFooter from './components/footer/TheFooter.vue'
 import TheSearchbar from './components/searchbar/TheSearchbar.vue'
+import Topbar from './components/topbar/Topbar.vue'
 
 export default {
-  components: { TheHeader, TheFooter, TheSearchbar },
+  components: { TheHeader, TheFooter, TheSearchbar, Topbar },
   computed: {
     isLoggedIn() {
       return this.$store.state.isLoggedIn

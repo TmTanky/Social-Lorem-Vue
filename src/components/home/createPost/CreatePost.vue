@@ -1,7 +1,7 @@
 <template>
     <form @submit.prevent="createPost" method="post">
         <div class="input">
-            <textarea v-model="content" placeholder="What's on your mind?" rows="5" cols="50"></textarea>
+            <textarea v-model="content" placeholder="What's on your mind?" rows="5"></textarea>
         </div>
 
         <div class="submit">
@@ -32,6 +32,10 @@ export default {
                     postBy: this.$store.state.user._id,
                     content: this.content
                 }
+            }, {
+                headers: {
+                    'authorization': `Bearer ${this.$store.state.user.token}`
+                }
             })
 
             this.refetch()
@@ -51,6 +55,10 @@ export default {
 </script>
 
 <style scoped>
+
+textarea {
+    width: 100%;
+}
 
 button.submitbtn:disabled {
     background-color: rgba(0, 0, 0, 0.5);

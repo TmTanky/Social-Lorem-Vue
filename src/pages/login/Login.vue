@@ -64,13 +64,20 @@ export default {
                                 lastName
                             }
                         }
+                        token
                     }
                 }`,
                 variables: {
                     email: this.email,
                     password: this.password
                 }
+            }, {
+                headers: {
+                    'login': 'true'
+                }
             })
+
+            console.log(data)
 
             if (data.errors !== undefined && data.errors.length > 0) {
                 this.isError = true
@@ -127,7 +134,7 @@ main {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    margin: auto;
+    margin: auto 2rem;
 }
 
 .intro .introdetails h1 {
@@ -236,6 +243,48 @@ a.loginlink {
 
 .error-leave-active {
     animation: loginError 0.3s ease-out reverse;
+}
+
+@media screen and (max-width: 800px) {
+
+    .intro {
+        margin: auto;
+    }
+
+    .intro .introdetails h1 {
+        font-size: 6vw;
+        text-align: center;
+    }
+
+    .intro .introdetails p {
+        margin-top: 1rem;
+        font-size: 5vw;
+        text-align: center;
+    }
+    
+    main {
+        flex-direction: column;
+    }
+
+}
+
+@media screen and (max-width: 500px) {
+
+    .intro .introdetails h1 {
+        font-size: 7vw;
+        text-align: center;
+    }
+
+    .intro .introdetails p {
+        margin-top: 1rem;
+        font-size: 6vw;
+        text-align: center;
+    }
+    
+    .login form {
+        width: 90%;
+    }
+
 }
 
 </style>

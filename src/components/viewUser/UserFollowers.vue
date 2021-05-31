@@ -57,11 +57,18 @@ export default {
                 variables: {
                     userID: this.$route.params.userID
                 }
+            }, {
+                headers: {
+                    'authorization': `Bearer ${this.$store.state.user.token}`
+                }
             })
 
-            console.log(data.data.viewUserByID._id)
-            console.log(this.$route.params.userID)
+            // console.log(data.data.viewUserByID._id)
+            // console.log(this.$route.params.userID)
             console.log(data)
+            if (data.errors && data.errors.length >= 1) {
+                return this.$router.push({name: 'not-found', params: { pathMatch: 'usernotfound' }})
+            }
             // console.log(data.data.viewUserByID.firstName)
             this.followers = data.data.viewUserByID.followers
             this.isLoading = false
@@ -139,6 +146,26 @@ main .onefollower {
 .following-enter-active,
 .nofollowing-enter-active {
     animation: fade 0.3s ease-in;
+}
+
+@media screen and (max-width: 500px) {
+
+    main {
+        padding: 0.5rem;
+    }
+
+    .title {
+        margin: 0;
+    }
+
+    .title h1 {
+        font-size: 10vw;
+    }
+
+    main .onefollower {
+        margin: 0.2rem 0;
+    }
+
 }
 
 </style>

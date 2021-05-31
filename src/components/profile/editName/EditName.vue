@@ -30,6 +30,10 @@ export default {
                     firstName: this.$refs.firstName.value,
                     lastName: this.$refs.lastName.value
                 }
+            }, {
+                headers: {
+                    'authorization': `Bearer ${this.$store.state.user.token}`
+                }
             })
 
             await this.getUsername()
@@ -48,7 +52,7 @@ export default {
 <style scoped>
 
 main {
-    position: absolute;
+    position: fixed;
     top: 0;
     right: 0;
     bottom: 0;
@@ -95,6 +99,22 @@ button {
 button:hover {
     background-color: rgba(0, 0, 0, 0.8);
     cursor: pointer;
+}
+
+@media screen and (max-width: 950px) {
+
+    main form {
+        width: 60%;
+    }
+
+}
+
+@media screen and (max-width: 500px) {
+
+    main form {
+        width: 95%;
+    }
+
 }
 
 </style>

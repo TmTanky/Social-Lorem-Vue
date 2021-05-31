@@ -4,7 +4,7 @@
             <beat-loader :loading="!isDoneLoading" color="black" size="15px"></beat-loader>
         </div>
 
-        <div class="userbox">
+        <div v-if="user" class="userbox">
             <transition name="theuser" >
                 <div v-if="isDoneLoading" class="user">
                     <div class="usernames">
@@ -32,40 +32,42 @@
             </transition>
 
             <transition-group name="posts" >
-                <div class="onepost" v-for="post in myPosts" :key="post._id" >
-                    <div class="postdetails">
-                        <h2> {{ post.postBy.firstName }} {{ post.postBy.lastName }} </h2>
-                        <p> {{ post.content }} </p>
-                    </div>
-
-                    <div class="reactcount">
-                        <p class="likecount" @click="toggleLikes(post._id)" > Likes: {{ post.likes.length }} </p>
-                        <p class="commentcount" @click="toggleComments(post._id)" > Comments: {{ post.comments.length }} </p>
-                    </div>
-
-                    <div class="react">
-                        <transition mode="out-in" name="reacting" >
-                            <div v-if="post.likes.filter(user => user._id === userID).length === 1" @click="like(post._id)" class="like">
-                                <img class="imglike" src="https://img.icons8.com/material-sharp/24/000000/facebook-like--v1.png"/>
-                            </div>
-
-                            <div v-else @click="like(post._id)" class="like"> 
-                                <img class="imglike" src="https://img.icons8.com/material-outlined/24/000000/facebook-like--v1.png"/>
-                            </div>   
-                        </transition> 
-
-                        <div @click="openComment(post._id)" class="comment">
-                            <img class="imgcomment" src="https://img.icons8.com/material-sharp/24/000000/topic.png"/>
+                <section v-if="myPosts">
+                    <div class="onepost" v-for="post in myPosts" :key="post._id" >
+                        <div class="postdetails">
+                            <h2> {{ post.postBy.firstName }} {{ post.postBy.lastName }} </h2>
+                            <p> {{ post.content }} </p>
                         </div>
-                    </div>
 
-                    <div v-if="post.isOpen">
-                        <transition name="commentopen" mode="out-in" >
-                            <create-comment @toggle-refetch="refetchAgain" :postID="post._id" > </create-comment>
-                        </transition>
-                    </div>
+                        <div class="reactcount">
+                            <p class="likecount" @click="toggleLikes(post._id)" > Likes: {{ post.likes.length }} </p>
+                            <p class="commentcount" @click="toggleComments(post._id)" > Comments: {{ post.comments.length }} </p>
+                        </div>
 
-                </div>
+                        <div class="react">
+                            <transition mode="out-in" name="reacting" >
+                                <div v-if="post.likes.filter(user => user._id === userID).length === 1" @click="like(post._id)" class="like">
+                                    <img class="imglike" src="https://img.icons8.com/material-sharp/24/000000/facebook-like--v1.png"/>
+                                </div>
+
+                                <div v-else @click="like(post._id)" class="like"> 
+                                    <img class="imglike" src="https://img.icons8.com/material-outlined/24/000000/facebook-like--v1.png"/>
+                                </div>   
+                            </transition> 
+
+                            <div @click="openComment(post._id)" class="comment">
+                                <img class="imgcomment" src="https://img.icons8.com/material-sharp/24/000000/topic.png"/>
+                            </div>
+                        </div>
+
+                        <div v-if="post.isOpen">
+                            <transition name="commentopen" mode="out-in" >
+                                <create-comment @toggle-refetch="refetchAgain" :postID="post._id" > </create-comment>
+                            </transition>
+                        </div>
+
+                    </div>
+                </section>
             </transition-group>
 
         </div>
@@ -89,7 +91,8 @@ export default {
             user: {},
             isDoneLoading: false,
             isEmpty: false,
-            myPosts: []
+            myPosts: [],
+            toViewID: ""
         }
     },
     methods: {
@@ -116,16 +119,24 @@ export default {
                 variables: {
                     username: this.$route.params.username
                 }
+            }, {
+                headers: {
+                    'authorization': `Bearer ${this.$store.state.user.token}`
+                }
             })
 
-            // console.log(data)
+            console.log(data)
 
+            this.toViewID = data.data.viewUser.username ?? "tae" 
             this.isDoneLoading = true
             this.user = data.data.viewUser
 
         },
         async getData() {
-            const {data} = await axios.post('http://localhost:8000/graphql', {
+            
+            try {
+
+                const {data} = await axios.post('http://localhost:8000/graphql', {
                 query: `query viewUserPosts($username: String) {
                     viewUserPosts(username: $username) {
                         _id
@@ -154,18 +165,31 @@ export default {
                 variables: {
                     username: this.$route.params.username
                 }
-            })
-            // console.log(data)
-            // data.data.viewUserPosts.forEach(element => {
-            //     element.isOpen = false
-            // })
+                }, {
+                    headers: {
+                        'authorization': `Bearer ${this.$store.state.user.token}`
+                    }
+                })
+                // console.log(data)
+                // data.data.viewUserPosts.forEach(element => {
+                //     element.isOpen = false
+                // })
+                console.log(data)
+                if (data.errors && data.errors.length >= 1) {
+                    return this.$router.push({name: 'not-found', params: { pathMatch: 'usernotfound' }})
+                }
 
-            console.log(data)
-            if (data.data.viewUserPosts && data.data.viewUserPosts.length === 0) {
-                this.isEmpty = true
+                // if (data.data.viewUserPosts && data.data.viewUserPosts.length === 0) {
+                //     this.isEmpty = true
+                // }
+
+                data.data.viewUserPosts && data.data.viewUserPosts.length === 0 ? this.isEmpty = true : this.isEmpty = false
+                
+                this.myPosts = data.data.viewUserPosts 
+                
+            } catch (err) {
+                console.log(err)
             }
-            
-            this.myPosts = data.data.viewUserPosts    
 
         },
         async follow(toFollowID) {
@@ -176,6 +200,10 @@ export default {
                 variables: {
                     userID: this.userID,
                     toFollowID
+                }
+            }, {
+                headers: {
+                    'authorization': `Bearer ${this.$store.state.user.token}`
                 }
             })
 
@@ -191,6 +219,10 @@ export default {
                 variables: {
                     postID,
                     userID: this.userID
+                }
+            }, {
+                headers: {
+                    'authorization': `Bearer ${this.$store.state.user.token}`
                 }
             })
 
@@ -230,6 +262,7 @@ export default {
     },
     async created() {
         // await this.getData()
+        // this.toViewID = this.$route.params.username
         await this.search(this.$route.params.username)
         await this.getData()
     },
@@ -249,18 +282,40 @@ export default {
         }
     },
     watch: {
-        $route(prevValue,value) {
-            // const params = value.params.username
-            if (prevValue.params.username !== value.params.username) {
+        async $route(prevValue,value) {
+
+            // console.log(prevValue.matched[0].path)
+            // console.log(value.matched[0].path)
+
+            if (prevValue.params.username !== value.params.username && prevValue.matched[0].path === value.matched[0].path ) {
+                console.log('nagbago')
+                this.isDoneLoading = false
                 this.isEmpty = false
-                this.getData()
-                return this.search(value.params.username)
+                await this.search(value.params.username)
+                return this.getData()
             }
 
-            this.isEmpty = false
-            this.getData()
-            this.search(value.params.username)
-            return
+            // if (prevValue.matched[0].path !== value.matched[0].path) {
+            //     return 
+            // }
+            
+            // this.isDoneLoading = false
+            // const params = value.params.username
+            // if (prevValue.params.username !== value.params.username) {
+            //     console.log('naiba')
+            //     this.isEmpty = false
+                // this.getData()
+                // await this.search(value.params.username)
+                // return await this.getData()
+                // this.getData()
+            // }
+
+            // this.isEmpty = false
+            // await this.search(value.params.username)
+            // this.getData()
+            // await this.search(value.params.username)
+            // return await this.getData()
+            
         }
     }
 }
@@ -441,6 +496,33 @@ main {
 .theuser-enter-active,
 .noposts-enter-active {
     animation: fade 0.25s ease-in;
+}
+
+.posts-leave-active,
+.theuser-leave-active,
+.noposts-leave-active {
+    animation: fade 0.25s ease-in reverse;
+}
+
+@media screen and (max-width: 500px) {
+
+    main {
+        padding: 0.5rem;
+    }
+
+    /* .title h1 {
+        font-size: 10vw;
+        text-align: center;
+    }
+
+    .noposts h1 {
+        font-size: 8vw;
+    } */
+
+    .usernames h1 {
+        font-size: 1.2rem;
+    }
+
 }
 
 </style>

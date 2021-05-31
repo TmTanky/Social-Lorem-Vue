@@ -1,11 +1,7 @@
 <template>
     <nav v-if="!isLoggedIn" >
         <div class="navlogo">
-            <h1> Social-Vue </h1>
-        </div>
-
-        <div class="navlinks">
-            <router-link to="/" @click="logout" v-if="isLoggedIn" > Logout </router-link>
+            <h1 @click="toMain"> Social-Vue </h1>
         </div>
     </nav>
 </template>
@@ -13,6 +9,9 @@
 <script>
 export default {
     methods: {
+        toMain() {
+            this.$router.push('/')  
+        },
         logout() {
             this.$store.dispatch('logoutSuccess')
             this.$store.dispatch('emptyUser')
@@ -38,6 +37,10 @@ nav {
 .navlogo, .navlinks {
     flex: 1;
     display: flex;
+}
+
+.navlogo h1 {
+    cursor: pointer;
 }
 
 .navlinks {

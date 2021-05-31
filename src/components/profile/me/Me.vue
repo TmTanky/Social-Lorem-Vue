@@ -40,7 +40,6 @@
                         <h2> {{ post.postBy.firstName }} {{post.postBy.lastName }} </h2>
                     </div>
                     <div>
-                        
                         <transition name="openeditpost">
                             <edit-post :getData="getData" :selectedID="selectedID" :myPosts="myPosts" :isOpen="isEditOpen" :closeForm="editOpen" > </edit-post>
                         </transition>
@@ -154,6 +153,10 @@ export default {
                 variables: {
                     userID: this.userID
                 }
+            }, {
+                headers: {
+                    'authorization': `Bearer ${this.$store.state.user.token}`
+                }
             })
             console.log(data)
             this.firstName = data.data.getUsername.firstName 
@@ -193,6 +196,10 @@ export default {
                 variables: {
                     userID: this.userID
                 }
+            }, {
+                headers: {
+                    'authorization': `Bearer ${this.$store.state.user.token}`
+                }
             })
             // console.log(data)
 
@@ -219,6 +226,10 @@ export default {
                 variables: {
                     postID
                 }
+            }, {
+                headers: {
+                    'authorization': `Bearer ${this.$store.state.user.token}`
+                }
             })
 
             await this.getData()
@@ -240,6 +251,10 @@ export default {
                 }`,
                 variables: {
                     userID: this.userID
+                }
+            }, {
+                headers: {
+                    'authorization': `Bearer ${this.$store.state.user.token}`
                 }
             })
             console.log(data)
@@ -281,6 +296,10 @@ export default {
                     userID: this.userID,
                     limitCount: this.limitCount,
                     skipCount: this.skipCount
+                }
+            }, {
+                headers: {
+                    'authorization': `Bearer ${this.$store.state.user.token}`
                 }
             })
 
@@ -327,6 +346,10 @@ export default {
                     limitCount: this.limitCount,
                     skipCount: this.postLength
                 }
+            }, {
+                headers: {
+                    'authorization': `Bearer ${this.$store.state.user.token}`
+                }
             })
 
             if (data.data.reversePaginate === null) {
@@ -346,6 +369,10 @@ export default {
                 variables: {
                     postID,
                     userID: this.userID
+                }
+            }, {
+                headers: {
+                    'authorization': `Bearer ${this.$store.state.user.token}`
                 }
             })
 
@@ -613,6 +640,34 @@ main {
 .loadmore:hover {
     background-color: rgba(0, 0, 0, 0.8);
     cursor: pointer;
+}
+
+@media screen and (max-width: 500px) {
+
+    main {
+        padding: 0.5rem;
+    }
+
+    .title {
+        margin: 0;
+    }
+
+    .title h1 {
+        font-size: 15vw;
+    }
+
+    .me .mename h1 {
+        font-size: 9vw;
+    }
+
+    .me .mename {
+        padding: 0;
+    }
+
+    .onepost {
+        margin: 0.5rem 0;
+    }
+
 }
 
 </style>

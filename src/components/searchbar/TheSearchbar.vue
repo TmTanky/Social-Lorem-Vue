@@ -42,6 +42,10 @@ export default {
                 variables: {
                     username: this.$refs.search.value
                 }
+            }, {
+                headers: {
+                    'authorization': `Bearer ${this.$store.state.user.token}`
+                }
             })
 
             this.searchResults = data.data.getUserByUsername
@@ -79,7 +83,7 @@ form {
     justify-content: flex-start;
     padding: 1rem 0rem 1rem 1rem;
     background-color: black;
-    border-bottom: solid white 2px;
+    /* border-bottom: solid white 2px; */
     position: relative;
 }
 
@@ -136,6 +140,31 @@ p {
 
 .userresults-leave-active {
     animation: fade 0.5s ease-in reverse;
+}
+
+@media screen and (max-width: 900px) {
+
+    input {
+        width: 40%
+    }
+
+}
+
+@media screen and (max-width: 750px) {
+
+    form {
+        justify-content: center;
+        padding: 1rem 0rem;
+    }
+
+    input {
+        width: 95%;
+    }
+
+    .searchresults {
+        width: 95%;
+    }
+
 }
 
 </style>

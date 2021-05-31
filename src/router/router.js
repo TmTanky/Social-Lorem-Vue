@@ -13,6 +13,8 @@ import ViewMyFollowers from '../pages/viewMine/ViewMyFollowers.vue'
 import ViewUsersFollowing from '../pages/viewUser/ViewFollowing.vue'
 import ViewUsersFollowers from '../pages/viewUser/ViewFollowers.vue'
 
+import Error from '../pages/errorPage/Error.vue'
+
 // Store
 import {store} from '../vue-state/store/store'
 
@@ -179,6 +181,11 @@ export const routes = [
 
             return next()
         }
+    },
+    {
+        path: '/:pathMatch(.*)*',
+        name: 'not-found',
+        component: Error
     }
 
 ]

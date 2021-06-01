@@ -113,7 +113,7 @@ export default {
                 return this.isUserError = true
             }
 
-            const {data} = await axios.post('http://localhost:8000/graphql', {
+            await axios.post('http://localhost:8000/graphql', {
                 query: `mutation changeUsername($userID: ID!, $newUsername: String!) {
                     changeUsername(userID: $userID, newUsername: $newUsername)
                 }`,
@@ -127,7 +127,6 @@ export default {
                 }
             })
 
-            console.log(data)
             await this.getUserInfo()
             this.isChangeUsername = false
         },
@@ -143,7 +142,7 @@ export default {
                 return this.isPassError = true
             }
 
-            const {data} = await axios.post('http://localhost:8000/graphql', {
+            await axios.post('http://localhost:8000/graphql', {
                 query: `mutation changePassword($userID: ID!, $newPass: String!) {
                     changePassword(userID: $userID, newPass: $newPass)
                 }`,
@@ -159,8 +158,6 @@ export default {
 
             this.passwordError = []
             this.isChangePassword = false
-
-            console.log(data)
 
         },
         toggleChange() {

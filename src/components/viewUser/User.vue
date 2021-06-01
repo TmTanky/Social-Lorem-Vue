@@ -32,7 +32,6 @@
             </transition>
 
             <transition-group name="posts" >
-                <section v-if="myPosts">
                     <div class="onepost" v-for="post in myPosts" :key="post._id" >
                         <div class="postdetails">
                             <h2> {{ post.postBy.firstName }} {{ post.postBy.lastName }} </h2>
@@ -67,8 +66,10 @@
                         </div>
 
                     </div>
-                </section>
+
             </transition-group>
+
+            <button v-if="myPosts.length >= 1" @click="loadMore" > Load More </button>
 
         </div>
     </main>
@@ -92,7 +93,8 @@ export default {
             isDoneLoading: false,
             isEmpty: false,
             myPosts: [],
-            toViewID: ""
+            toViewID: "",
+            limitCount: 5
         }
     },
     methods: {
@@ -125,8 +127,6 @@ export default {
                 }
             })
 
-            console.log(data)
-
             this.toViewID = data.data.viewUser.username ?? "tae" 
             this.isDoneLoading = true
             this.user = data.data.viewUser
@@ -137,8 +137,8 @@ export default {
             try {
 
                 const {data} = await axios.post('http://localhost:8000/graphql', {
-                query: `query viewUserPosts($username: String) {
-                    viewUserPosts(username: $username) {
+                query: `query viewUserPosts($username: String, $limitCount: Int) {
+                    viewUserPosts(username: $username, limitCount: $limitCount) {
                         _id
                         createdAt
                         content
@@ -163,29 +163,23 @@ export default {
                     }
                 }`,
                 variables: {
-                    username: this.$route.params.username
+                    username: this.$route.params.username,
+                    limitCount: this.limitCount
                 }
                 }, {
                     headers: {
                         'authorization': `Bearer ${this.$store.state.user.token}`
                     }
                 })
-                // console.log(data)
-                // data.data.viewUserPosts.forEach(element => {
-                //     element.isOpen = false
-                // })
-                console.log(data)
+
                 if (data.errors && data.errors.length >= 1) {
                     return this.$router.push({name: 'not-found', params: { pathMatch: 'usernotfound' }})
                 }
 
-                // if (data.data.viewUserPosts && data.data.viewUserPosts.length === 0) {
-                //     this.isEmpty = true
-                // }
-
                 data.data.viewUserPosts && data.data.viewUserPosts.length === 0 ? this.isEmpty = true : this.isEmpty = false
                 
-                this.myPosts = data.data.viewUserPosts 
+                this.myPosts = data.data.viewUserPosts
+                this.limitCount+=5
                 
             } catch (err) {
                 console.log(err)
@@ -193,7 +187,7 @@ export default {
 
         },
         async follow(toFollowID) {
-            const {data} = await axios.post('http://localhost:8000/graphql', {
+            await axios.post('http://localhost:8000/graphql', {
                 query: `mutation followUser($userID: ID!, $toFollowID: ID!) {
                     followUser(userID: $userID, toFollowID: $toFollowID)
                 }`,
@@ -207,12 +201,10 @@ export default {
                 }
             })
 
-            console.log(data)
-
             await this.search()
         },
         async like(postID) {
-            const {data} = await axios.post('http://localhost:8000/graphql', {
+            await axios.post('http://localhost:8000/graphql', {
                 query: `mutation reactToPost($postID: ID!, $userID: ID!) {
                     reactToPost(postID: $postID, userID: $userID)
                 }`,
@@ -226,32 +218,28 @@ export default {
                 }
             })
 
-            console.log(data)
             await this.refetch()
 
         },
         async refetch() {
             await this.getData()
         },
+        async loadMore() {
+            await this.getData()
+        },
         toggleLikes(postID) {
             this.openLikes = true
-            // this.$router.push('/viewlikes/')
             this.$router.push({name: 'viewlikes', params: {postID}})
         },
         toggleComments(postID) {
             this.$router.push({name: 'viewcomments', params: {postID}})
         },
         openComment(postID) {
-            // console.log(this.myPosts)
             const toActivated = this.myPosts.find(item => item._id === postID)
             toActivated.isOpen = !toActivated.isOpen
-            // this.openComments = !this.openComments
-            // console.log(index)
-            // console.log(this.myPosts.indexOf(item => item._id === index))
         },
         refetchAgain() {
             this.refetch()
-            // this.openComment(postID)
         },
         redirectToFollowing(userID) {
             this.$router.push({name: 'viewusersfollowing', params: {userID}})
@@ -261,8 +249,6 @@ export default {
         }
     },
     async created() {
-        // await this.getData()
-        // this.toViewID = this.$route.params.username
         await this.search(this.$route.params.username)
         await this.getData()
     },
@@ -284,37 +270,12 @@ export default {
     watch: {
         async $route(prevValue,value) {
 
-            // console.log(prevValue.matched[0].path)
-            // console.log(value.matched[0].path)
-
             if (prevValue.params.username !== value.params.username && prevValue.matched[0].path === value.matched[0].path ) {
-                console.log('nagbago')
                 this.isDoneLoading = false
                 this.isEmpty = false
                 await this.search(value.params.username)
                 return this.getData()
             }
-
-            // if (prevValue.matched[0].path !== value.matched[0].path) {
-            //     return 
-            // }
-            
-            // this.isDoneLoading = false
-            // const params = value.params.username
-            // if (prevValue.params.username !== value.params.username) {
-            //     console.log('naiba')
-            //     this.isEmpty = false
-                // this.getData()
-                // await this.search(value.params.username)
-                // return await this.getData()
-                // this.getData()
-            // }
-
-            // this.isEmpty = false
-            // await this.search(value.params.username)
-            // this.getData()
-            // await this.search(value.params.username)
-            // return await this.getData()
             
         }
     }
@@ -352,6 +313,23 @@ main {
     flex: 5;
     flex-direction: column;
     padding: 1rem 2rem;
+}
+
+button {
+    border: none;
+    background-color: black;
+    color: white;
+    padding: 0.5rem;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    transition-duration: 0.5s;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+button:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+    cursor: pointer;
 }
 
 .user {

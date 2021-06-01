@@ -61,7 +61,6 @@ export default {
                 }
             })
 
-            console.log(data.data.viewUserByID.followers)
             this.followers = data.data.viewUserByID.followers
             this.isLoading = false
 

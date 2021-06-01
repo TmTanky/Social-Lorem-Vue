@@ -77,8 +77,6 @@ export default {
                 }
             })
 
-            console.log(data)
-
             if (data.errors !== undefined && data.errors.length > 0) {
                 this.isError = true
                 return this.error = data.errors[0]

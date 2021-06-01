@@ -14,10 +14,6 @@
             </div>
         </transition>
 
-        <!-- <div v-if="following.length === 0 && !isLoading" class="empty">
-            <h1> No following </h1>
-        </div> -->
-
         <div class="following">
             <transition-group name="following">
                 <div v-for="user in following" :key="user._id" class="onefollower">
@@ -67,10 +63,6 @@ export default {
                 }
             })
 
-            console.log(data.data.viewUserByID._id)
-            console.log(this.$route.params.userID)
-            console.log(data)
-            // console.log(data.data.viewUserByID.firstName)
             this.following = data.data.viewUserByID.following
             this.isLoading = false
 

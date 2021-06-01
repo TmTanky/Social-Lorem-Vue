@@ -63,13 +63,10 @@ export default {
                 }
             })
 
-            // console.log(data.data.viewUserByID._id)
-            // console.log(this.$route.params.userID)
-            console.log(data)
             if (data.errors && data.errors.length >= 1) {
                 return this.$router.push({name: 'not-found', params: { pathMatch: 'usernotfound' }})
             }
-            // console.log(data.data.viewUserByID.firstName)
+
             this.followers = data.data.viewUserByID.followers
             this.isLoading = false
 

@@ -1,21 +1,12 @@
 <template>
     <form @submit.prevent >
-        <input @keyup="search" ref="search" type="text" placeholder="Search Something" name="" > 
-        <!-- <button @click="search" > <img src="https://img.icons8.com/material-sharp/20/ffffff/search.png"/> </button> -->
+        <input @keyup="search" ref="search" type="text" placeholder="Search Something (Case-Sensitive)" name="" > 
         
         <div class="searchresults">
             <transition-group name="userresults" >
                 <div class="eachuser" @click="clear(user.username)" v-for="user in searchResults" :key="user._id" >
-                    <!-- <router-link to="#" > <h3> {{ user.firstName }} {{ user.lastName }} </h3> </router-link>
-                    <p> {{ user.username }} </p> -->
-                    <!-- <router-link @click="clear" :to="{name: 'oneuser', params: {username: user.username}}" >
-                        <h3> {{ user.firstName }} {{ user.lastName }} </h3>
-                        <p> {{ user.username }} </p>
-                    </router-link> -->
-
-                        <h3> {{ user.firstName }} {{ user.lastName }} </h3>
-                        <p> @{{ user.username }} </p>
-
+                    <h3> {{ user.firstName }} {{ user.lastName }} </h3>
+                    <p> @{{ user.username }} </p>
                 </div>
             </transition-group>
         </div>
@@ -27,9 +18,14 @@
 import axios from 'axios'
 
 export default {
+    data() {
+        return {
+            searchResults: [],
+            ifNoUsers: false
+        }
+    },
     methods: {
         async search() {
-            // console.log(this.$refs.search.value)
             const {data} = await axios.post('http://localhost:8000/graphql', {
                 query: `query getUserByUserName($username: String) {
                     getUserByUsername(username: $username) {
@@ -55,12 +51,6 @@ export default {
             this.$refs.search.value = ""
             this.searchResults = []
             this.$router.push({name: 'oneuser', params: {username: username}})
-        }
-    },
-    data() {
-        return {
-            searchResults: [],
-            ifNoUsers: false
         }
     }
 }

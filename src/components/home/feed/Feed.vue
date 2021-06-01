@@ -116,7 +116,6 @@ export default {
                 }
             })
 
-            console.log(data)
 
             data.data.getAllPosts.forEach(element => {
                 element.isOpen = false
@@ -136,7 +135,7 @@ export default {
 
         },
         async like(postID) {
-            const {data} = await axios.post('http://localhost:8000/graphql', {
+            await axios.post('http://localhost:8000/graphql', {
                 query: `mutation reactToPost($postID: ID!, $userID: ID!) {
                     reactToPost(postID: $postID, userID: $userID)
                 }`,
@@ -150,7 +149,6 @@ export default {
                 }
             })
 
-            console.log(data)
             await this.refetch()
 
         },
@@ -159,23 +157,17 @@ export default {
         },
         toggleLikes(postID) {
             this.openLikes = true
-            // this.$router.push('/viewlikes/')
             this.$router.push({name: 'viewlikes', params: {postID}})
         },
         toggleComments(postID) {
             this.$router.push({name: 'viewcomments', params: {postID}})
         },
         openComment(postID) {
-            // console.log(this.myPosts)
             const toActivated = this.myPosts.find(item => item._id === postID)
             toActivated.isOpen = !toActivated.isOpen
-            // this.openComments = !this.openComments
-            // console.log(index)
-            // console.log(this.myPosts.indexOf(item => item._id === index))
         },
         refetchAgain() {
             this.refetch()
-            // this.openComment(postID)
         }
     },
     created() {

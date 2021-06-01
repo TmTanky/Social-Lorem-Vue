@@ -1,8 +1,8 @@
 <template>
     <main>
         <form @submit.prevent="createComment" method="post">
-            <input ref="comment" type="text" name="" id="">
-            <button> Submit </button>
+            <input v-model="comment" type="text" name="" id="">
+            <button :disabled="isEmpty" type="submit" > Submit </button>
         </form>
     </main>
 </template>
@@ -14,15 +14,21 @@ export default {
     props: {
         postID: String
     },
+    data() {
+        return {
+            comment: ""
+        }
+    },
     methods: {
         async createComment() {
+
             await axios.post('http://localhost:8000/graphql', {
                 query: `mutation createComment($postID: ID!, $content: String!, $userID: ID!) {
                     createComment(postID: $postID, content: $content, userID: $userID)
                 }`,
                 variables: {
                     postID: this.postID,
-                    content: this.$refs.comment.value,
+                    content: this.comment,
                     userID: this.userID
                 }
             }, {
@@ -31,13 +37,21 @@ export default {
                 }
             })
 
-            this.$refs.comment.value = ""
+            this.comment = ""
             this.$emit('toggle-refetch')
+
         }
     },
     computed: {
         userID() {
              return this.$store.state.user._id
+        },
+        isEmpty() {
+            if (this.comment === "") {
+                return true
+            }
+
+            return false
         }
     }
 }
@@ -49,12 +63,6 @@ input {
     width: 100%;
     padding: 0.5rem;
 }
-
-/* button {
-    margin-top: 0.5rem;
-    width: 100px;
-    padding: 0.5rem 1rem;
-} */
 
 button {
     border: none;
@@ -71,6 +79,10 @@ button {
 button:hover {
     background-color: rgba(0, 0, 0, 0.8);
     cursor: pointer;
+}
+
+button:disabled {
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 </style>

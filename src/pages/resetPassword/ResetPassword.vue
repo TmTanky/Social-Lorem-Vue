@@ -71,6 +71,10 @@ export default {
                 variables: {
                     email: this.email
                 }
+            }, {
+                headers: {
+                    'reset': 'true'
+                }
             })
 
             this.code = data.data.sendEmail.code
@@ -107,6 +111,10 @@ export default {
                 variables: {
                     userID: this.userID,
                     newPass: this.newPass
+                }
+            }, {
+                headers: {
+                    'confirm': 'true'
                 }
             })
 

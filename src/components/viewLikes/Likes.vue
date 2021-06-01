@@ -60,7 +60,6 @@ export default {
 
             this.thePost = data.data.viewLikes.likes
             this.isLoading = false
-            console.log(this.thePost)
 
         }
     },

@@ -158,7 +158,7 @@ export default {
                     'authorization': `Bearer ${this.$store.state.user.token}`
                 }
             })
-            console.log(data)
+
             this.firstName = data.data.getUsername.firstName 
             this.lastName = data.data.getUsername.lastName
             this.username = data.data.getUsername.username
@@ -201,13 +201,10 @@ export default {
                     'authorization': `Bearer ${this.$store.state.user.token}`
                 }
             })
-            // console.log(data)
 
             data.data.getUsersPosts.forEach(element => {
                 element.isOpen = false
             })
-
-            console.log(data)
 
             if (data.data.getUsersPosts && data.data.getUsersPosts.length === 0) {
                 this.isLoading = false
@@ -257,7 +254,7 @@ export default {
                     'authorization': `Bearer ${this.$store.state.user.token}`
                 }
             })
-            console.log(data)
+
             this.myFollowing = data.data.getFollow.following
             this.myFollowers =  data.data.getFollow.followers
         },
@@ -306,14 +303,6 @@ export default {
             data.data.paginate.forEach(element => {
                 element.isOpen = false
             })
-            // this.skipCount+=5
-
-            // if (data.data.paginate.length === this.myPosts.length) {
-            //     this.isNoPosts = true
-            //     return 
-            // }
-
-            console.log(data)
 
             if (data.data.paginate.length === 0) {
                 this.isLoading = false
@@ -362,7 +351,7 @@ export default {
 
         },
         async like(postID) {
-            const {data} = await axios.post('http://localhost:8000/graphql', {
+            await axios.post('http://localhost:8000/graphql', {
                 query: `mutation reactToPost($postID: ID!, $userID: ID!) {
                     reactToPost(postID: $postID, userID: $userID)
                 }`,
@@ -376,7 +365,6 @@ export default {
                 }
             })
 
-            console.log(data)
             await this.refetch()
 
         },
@@ -392,16 +380,11 @@ export default {
             this.$router.push({name: 'viewcomments', params: {postID}})
         },
         openComment(postID) {
-            // console.log(this.myPosts)
             const toActivated = this.myPosts.find(item => item._id === postID)
             toActivated.isOpen = !toActivated.isOpen
-            // this.openComments = !this.openComments
-            // console.log(index)
-            // console.log(this.myPosts.indexOf(item => item._id === index))
         },
         refetchAgain() {
             this.refetch()
-            // this.openComment(postID)
         },
         redirectToFollowing() {
             this.$router.push({name: 'viewmyfollowing', params: {userID: this.userID}})

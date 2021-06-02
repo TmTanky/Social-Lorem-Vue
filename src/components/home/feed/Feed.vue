@@ -79,7 +79,7 @@ export default {
     },
     methods: {
         async getData() {
-            const {data} = await axios.post('http://localhost:8000/graphql', {
+            const {data} = await axios.post('https://loremshare-ts-gql-api.herokuapp.com/graphql', {
                 query: `query getAllPosts {
                     getAllPosts {
                         _id
@@ -135,7 +135,7 @@ export default {
 
         },
         async like(postID) {
-            await axios.post('http://localhost:8000/graphql', {
+            await axios.post('https://loremshare-ts-gql-api.herokuapp.com/graphql', {
                 query: `mutation reactToPost($postID: ID!, $userID: ID!) {
                     reactToPost(postID: $postID, userID: $userID)
                 }`,

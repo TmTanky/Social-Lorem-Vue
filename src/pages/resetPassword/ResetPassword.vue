@@ -61,7 +61,7 @@ export default {
 
             this.isLoading = true
 
-            const {data} = await axios.post('http://localhost:8000/graphql', {
+            const {data} = await axios.post('https://loremshare-ts-gql-api.herokuapp.com/graphql', {
                 query: `mutation sendEmail($email: String!) {
                     sendEmail(email: $email) {
                         code
@@ -104,7 +104,7 @@ export default {
                 return alert('Password must be 5 characters long')
             }
 
-            const {data} = await axios.post('http://localhost:8000/graphql', {
+            const {data} = await axios.post('https://loremshare-ts-gql-api.herokuapp.com/graphql', {
                 query: `mutation changePassword($userID: ID!, $newPass: String!) {
                     changePassword(userID: $userID, newPass: $newPass)
                 }`,

@@ -20,7 +20,7 @@ export default {
     },
     methods: {
         async submitEdit() {
-            await axios.post('http://localhost:8000/graphql',{
+            await axios.post('https://loremshare-ts-gql-api.herokuapp.com/graphql',{
                 query: `mutation editPost($postID: ID!, $content: String!) {
                     editPost(postID: $postID, content: $content) 
                 }`,

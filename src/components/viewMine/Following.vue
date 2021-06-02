@@ -41,7 +41,7 @@ export default {
     },
     methods: {
         async getFollowing() {
-            const {data} = await axios.post('http://localhost:8000/graphql', {
+            const {data} = await axios.post('https://loremshare-ts-gql-api.herokuapp.com/graphql', {
                 query: `query viewUserByID($userID: ID) {
                     viewUserByID(userID: $userID) {
                         following {

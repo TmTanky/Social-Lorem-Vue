@@ -22,7 +22,7 @@ export default {
     methods: {
         async createComment() {
 
-            await axios.post('http://localhost:8000/graphql', {
+            await axios.post('https://loremshare-ts-gql-api.herokuapp.com/graphql', {
                 query: `mutation createComment($postID: ID!, $content: String!, $userID: ID!) {
                     createComment(postID: $postID, content: $content, userID: $userID)
                 }`,

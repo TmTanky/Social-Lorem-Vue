@@ -26,7 +26,7 @@ export default {
     },
     methods: {
         async search() {
-            const {data} = await axios.post('http://localhost:8000/graphql', {
+            const {data} = await axios.post('https://loremshare-ts-gql-api.herokuapp.com/graphql', {
                 query: `query getUserByUserName($username: String) {
                     getUserByUsername(username: $username) {
                         _id

@@ -99,7 +99,7 @@ export default {
     },
     methods: {
         async search() {
-            const {data} = await axios.post('http://localhost:8000/graphql', {
+            const {data} = await axios.post('https://loremshare-ts-gql-api.herokuapp.com/graphql', {
                 query: `query viewUser($username: String) {
                     viewUser(username: $username) {
                         _id
@@ -136,7 +136,7 @@ export default {
             
             try {
 
-                const {data} = await axios.post('http://localhost:8000/graphql', {
+                const {data} = await axios.post('https://loremshare-ts-gql-api.herokuapp.com/graphql', {
                 query: `query viewUserPosts($username: String, $limitCount: Int) {
                     viewUserPosts(username: $username, limitCount: $limitCount) {
                         _id
@@ -187,7 +187,7 @@ export default {
 
         },
         async follow(toFollowID) {
-            await axios.post('http://localhost:8000/graphql', {
+            await axios.post('https://loremshare-ts-gql-api.herokuapp.com/graphql', {
                 query: `mutation followUser($userID: ID!, $toFollowID: ID!) {
                     followUser(userID: $userID, toFollowID: $toFollowID)
                 }`,
@@ -204,7 +204,7 @@ export default {
             await this.search()
         },
         async like(postID) {
-            await axios.post('http://localhost:8000/graphql', {
+            await axios.post('https://loremshare-ts-gql-api.herokuapp.com/graphql', {
                 query: `mutation reactToPost($postID: ID!, $userID: ID!) {
                     reactToPost(postID: $postID, userID: $userID)
                 }`,

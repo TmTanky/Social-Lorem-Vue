@@ -142,7 +142,7 @@ export default {
             this.isEditName = true
         },
         async getUsername() {
-            const {data} = await axios.post('http://localhost:8000/graphql', {
+            const {data} = await axios.post('https://loremshare-ts-gql-api.herokuapp.com/graphql', {
                 query: `query getUsername($userID: ID) {
                     getUsername(userID: $userID) {
                         firstName
@@ -166,7 +166,7 @@ export default {
 
         },
         async getData() {
-            const {data} = await axios.post('http://localhost:8000/graphql', {
+            const {data} = await axios.post('https://loremshare-ts-gql-api.herokuapp.com/graphql', {
                 query: `query getUsersPosts($userID: ID) {
                     getUsersPosts(userID: $userID) {
                         _id
@@ -216,7 +216,7 @@ export default {
 
         },
         async deletePost(postID) {
-            await axios.post('http://localhost:8000/graphql', {
+            await axios.post('https://loremshare-ts-gql-api.herokuapp.com/graphql', {
                 query: `mutation deletePost($postID: ID!) {
                     deletePost(postID: $postID)
                 }`,
@@ -233,7 +233,7 @@ export default {
 
         },
         async getFollow() {
-            const {data} = await axios.post('http://localhost:8000/graphql', {
+            const {data} = await axios.post('https://loremshare-ts-gql-api.herokuapp.com/graphql', {
                 query: `query getFollow($userID: ID) {
                     getFollow(userID: $userID) {
                         following {
@@ -262,7 +262,7 @@ export default {
 
             this.limitCount+=5
 
-            const {data} = await axios.post('http://localhost:8000/graphql', {
+            const {data} = await axios.post('https://loremshare-ts-gql-api.herokuapp.com/graphql', {
                 query: `query paginate($userID: ID, $limitCount: Int, $skipCount: Int) {
                     paginate(userID: $userID, limitCount: $limitCount, skipCount: $skipCount) {
                         _id
@@ -317,7 +317,7 @@ export default {
             
             this.skipCount-=5
 
-            const {data} = await axios.post('http://localhost:8000/graphql', {
+            const {data} = await axios.post('https://loremshare-ts-gql-api.herokuapp.com/graphql', {
                 query: `query reversePaginate($userID: ID, $limitCount: Int, $skipCount: Int) {
                     reversePaginate(userID: $userID, limitCount: $limitCount, skipCount: $skipCount) {
                         _id
@@ -351,7 +351,7 @@ export default {
 
         },
         async like(postID) {
-            await axios.post('http://localhost:8000/graphql', {
+            await axios.post('https://loremshare-ts-gql-api.herokuapp.com/graphql', {
                 query: `mutation reactToPost($postID: ID!, $userID: ID!) {
                     reactToPost(postID: $postID, userID: $userID)
                 }`,

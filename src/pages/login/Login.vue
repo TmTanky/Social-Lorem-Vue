@@ -48,7 +48,7 @@ export default {
     methods: {
         async loginSubmit() {
 
-            const {data} = await axios.post('https://loremshare-gql-ts-api.herokuapp.com/graphql',{
+            const {data} = await axios.post('https://loremshare-ts-gql-api.herokuapp.com/graphql',{
                 query: `query loginUser($email: String, $password: String) {
                     loginUser(email: $email, password: $password) {
                         _id

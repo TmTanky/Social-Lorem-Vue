@@ -85,7 +85,7 @@ export default {
     },
     methods: {
         async getUserInfo() {
-            const {data} = await axios.post('http://localhost:8000/graphql', {
+            const {data} = await axios.post('https://loremshare-ts-gql-api.herokuapp.com/graphql', {
                 query: `query viewUserByID($userID: ID) {
                     viewUserByID(userID: $userID) {
                         firstName
@@ -113,7 +113,7 @@ export default {
                 return this.isUserError = true
             }
 
-            await axios.post('http://localhost:8000/graphql', {
+            await axios.post('https://loremshare-ts-gql-api.herokuapp.com/graphql', {
                 query: `mutation changeUsername($userID: ID!, $newUsername: String!) {
                     changeUsername(userID: $userID, newUsername: $newUsername)
                 }`,
@@ -142,7 +142,7 @@ export default {
                 return this.isPassError = true
             }
 
-            await axios.post('http://localhost:8000/graphql', {
+            await axios.post('https://loremshare-ts-gql-api.herokuapp.com/graphql', {
                 query: `mutation changePassword($userID: ID!, $newPass: String!) {
                     changePassword(userID: $userID, newPass: $newPass)
                 }`,

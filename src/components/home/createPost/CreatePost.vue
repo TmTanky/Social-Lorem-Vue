@@ -21,7 +21,7 @@ export default {
     },
     methods: {
         async createPost() {
-            await axios.post(`http://localhost:8000/graphql`, {
+            await axios.post(`https://loremshare-ts-gql-api.herokuapp.com/graphql`, {
                 query: `mutation createPost($content: String!, $postBy: ID!) {
                     createPost(content: $content, postBy: $postBy) {
                         _id

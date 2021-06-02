@@ -21,7 +21,7 @@ export default {
     methods: {
         async editNameSubmit() {
 
-            await axios.post('http://localhost:8000/graphql', {
+            await axios.post('https://loremshare-ts-gql-api.herokuapp.com/graphql', {
                 query: `mutation editUsername($userID: ID!, $firstName: String!, $lastName: String!) {
                     editUsername(userID: $userID, firstName: $firstName, lastName: $lastName)
                 }`,

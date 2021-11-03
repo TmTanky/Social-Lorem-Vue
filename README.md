@@ -1,4 +1,16 @@
-# social-lorem-vue
+# Social-Lorem-Vue
+
+Project create with Vue JS
+
+A social media application where you can:
+
+- Create a post
+- Like a post
+- Comment on a post
+- Follow and unfollow users
+- Search for a user
+- Edit your profle
+- Change password with email (local environment only)
 
 ## Project setup
 ```
@@ -9,16 +21,3 @@ npm install
 ```
 npm run serve
 ```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
